@@ -12,12 +12,12 @@ namespace RichardSzalay.HostsFileExtension.Registration
     {
         public override ModuleDefinition GetModuleDefinition(IManagementContext context)
         {
-            return new ModuleDefinition(Name, typeof(ManageHostsModulePage).AssemblyQualifiedName);
+            return new ModuleDefinition(Name, typeof(ManageHostsModule).AssemblyQualifiedName);
         }
 
         public override Type ServiceType
         {
-            get { throw null; }
+            get { return null; }
         }
 
         public override bool SupportsScope(ManagementScope scope)

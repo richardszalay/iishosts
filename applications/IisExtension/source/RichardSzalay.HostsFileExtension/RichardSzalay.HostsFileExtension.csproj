@@ -95,7 +95,7 @@
   </Target>
   -->
   <PropertyGroup>
-    <PostBuildEvent>call "%25VS90COMNTOOLS%25\vsvars32.bat" &gt; NULL 
+    <PostBuildEvent>call "%25VS90COMNTOOLS%25\vsvars32.bat"
 gacutil.exe /if "$(TargetPath)"</PostBuildEvent>
   </PropertyGroup>
 </Project>

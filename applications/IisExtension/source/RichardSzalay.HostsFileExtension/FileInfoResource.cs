@@ -11,7 +11,7 @@ namespace RichardSzalay.HostsFileExtension
         private FileInfo file;
 
         public FileInfoResource(string filename)
-            : this(new FileInfo(filename))
+            : this(new FileInfo(Environment.ExpandEnvironmentVariables(filename)))
         {
         }
 

@@ -12,6 +12,17 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private IManageHostsModulePage view;
         private HostsFile hostsFile;
 
+        public ManageHostsModulePagePresenter(IManageHostsModulePage view)
+        {
+            this.view = view;
+            this.view.Initialized += new EventHandler(view_HandleCreated);
+        }
+
+        void view_HandleCreated(object sender, EventArgs e)
+        {
+            this.UpdateData();
+        }
+
         public bool HasChanges
         {
             get

@@ -7,6 +7,7 @@ using Microsoft.Web.Administration;
 using System.Windows.Forms;
 using Microsoft.Web.Management.Client;
 using RichardSzalay.HostsFileExtension.Properties;
+using RichardSzalay.HostsFileExtension.Presenter;
 
 namespace RichardSzalay.HostsFileExtension.View
 {
@@ -24,6 +25,7 @@ namespace RichardSzalay.HostsFileExtension.View
 
         public ManageHostsModulePage()
         {
+            ManageHostsModulePagePresenter presenter = new ManageHostsModulePagePresenter(this);
         }
 
         private void CreateUserInterface()
@@ -47,7 +49,6 @@ namespace RichardSzalay.HostsFileExtension.View
 
         void ListView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            
         }
 
         protected override bool CanRefresh
@@ -63,11 +64,23 @@ namespace RichardSzalay.HostsFileExtension.View
         protected override void InitializeListPage()
         {
             this.CreateUserInterface();
+
+            OnInitialized();
         }
 
         #region IManageHostsModulePage Members
 
-        public event EventHandler Load;
+        public event EventHandler Initialized;
+
+        protected virtual void OnInitialized()
+        {
+            EventHandler handler = Initialized;
+
+            if (handler != null)
+            {
+                handler(this, EventArgs.Empty);
+            }
+        }
 
         public ListView.ListViewItemCollection HostEntries
         {
