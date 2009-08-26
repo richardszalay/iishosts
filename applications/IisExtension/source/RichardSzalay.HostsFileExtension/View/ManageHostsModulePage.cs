@@ -13,6 +13,8 @@ namespace RichardSzalay.HostsFileExtension.View
     /// </summary>
     public class ManageHostsModulePage : ModuleListPage, IManageHostsModulePage
     {
+        public event EventHandler Refreshing;
+
         private ColumnHeader enabledColumnHeader;
         private ColumnHeader addressColumnHeader;
         private ColumnHeader hostnameColumnHeader;
@@ -53,7 +55,7 @@ namespace RichardSzalay.HostsFileExtension.View
 
         protected override void Refresh()
         {
-            base.Refresh();
+           base.Refresh();
         }
 
         protected override void InitializeListPage()

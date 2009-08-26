@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3CFA44AA-60BF-4B61-BD75-9498DFB48257}</ProjectGuid>
+    <ProjectGuid>{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RichardSzalay.HostsFileExtension</RootNamespace>
-    <AssemblyName>RichardSzalay.HostsFileExtension</AssemblyName>
+    <RootNamespace>RichardSzalay.HostsFileExtension.Tests</RootNamespace>
+    <AssemblyName>RichardSzalay.HostsFileExtension.Tests</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,20 +31,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="nunit.framework, Version=2.5.1.9189, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Windows\System32\inetsrv\Microsoft.Web.Administration.dll</HintPath>
+      <HintPath>..\..\libs\NUnit\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Web.Management, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\Windows\System32\inetsrv\Microsoft.Web.Management.dll</HintPath>
+      <HintPath>..\..\libs\RhinoMocks\Rhino.Mocks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Windows.Presentation">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml.Linq">
@@ -57,16 +53,36 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileInfoResource.cs" />
-    <Compile Include="HostEntry.cs" />
-    <Compile Include="HostsFile.cs" />
-    <Compile Include="IResource.cs" />
-    <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
-    <Compile Include="View\IManageHostsModulePage.cs" />
-    <Compile Include="View\ManageHostsModulePage.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="HostEntryFixture.cs" />
+    <Compile Include="HostsFileFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="StringResource.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RichardSzalay.HostsFileExtension\RichardSzalay.HostsFileExtension.csproj">
+      <Project>{3CFA44AA-60BF-4B61-BD75-9498DFB48257}</Project>
+      <Name>RichardSzalay.HostsFileExtension</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ComplexHostsFile_Before.txt" />
+    <Content Include="ComplexHostsFile_Expected.txt" />
+    <Content Include="SampleHostsFile_Delete.txt" />
+    <Content Include="SampleHostsFile_Reorder.txt" />
+    <Content Include="SampleHostsFile_Disable.txt" />
+    <Content Include="SampleHostsFile.txt" />
+    <Content Include="DefaultHostsFile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

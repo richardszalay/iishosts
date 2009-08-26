@@ -9,40 +9,69 @@ namespace RichardSzalay.HostsFileExtension
 {
     public class HostsFile
     {
+        private IResource resource;
+
         private string[] lines;
-        public HostEntry[] entries;
+        private List<HostEntry> entries;
+
+        private List<int> deletedLines;
 
         private const string AddressExpression = @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}";
-        private const string EntryExpression = @"^(?'Enabled'\#)?\s*" +
+        private const string EntryExpression = @"^(?'Disabled'\#)?\s*" +
             @"(?'Address'" + AddressExpression + @")" +
             @"(?'Spacer'\s+)" +
-            @"(?'Hostname'\w+)\s*" +
+            @"(?'Hostname'[\.\w]+)\s*" +
             @"\#?\s*(?'Comment'.+)?$";
 
         private static readonly Regex lineRegex = new Regex(EntryExpression);
 
+        public HostsFile()
+            : this(HostsFileLocation)
+        {
+        }
+
         public HostsFile(string filename)
-            : this(File.Open(filename, FileMode.Open))
+            : this(new FileInfoResource(filename))
         {
             
         }
 
-        public HostsFile(Stream stream)
+        internal HostsFile(IResource resource)
         {
-            
+            this.resource = resource;
+
+            this.Load();
+        }
+
+        public void Load()
+        {
+            this.Load(this.resource.OpenRead());
+        }
+
+        public void Save()
+        {
+            this.Save(this.resource.OpenWrite());
         }
 
         private void Load(Stream stream)
         {
-            string[] lines = ReadAllLines(stream);
+            deletedLines = new List<int>();
 
-            this.entries = lines.Select(c => ParseHostEntry(c))
-                .Where(c => c != null)
-                .ToArray();
-        }
+            this.lines = ReadAllLines(stream);
 
-        public void Save(string filename)
-        {
+            List<HostEntry> entriesList = new List<HostEntry>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                HostEntry entry = ParseHostEntry(i, lines[i]);
+
+                if (!(entry == null || HostEntry.IsIgnoredHostname(entry.Hostname)))
+                {
+                    entriesList.Add(entry);
+                }
+            }
+
+            this.entries = entriesList;
         }
 
         internal void Save(Stream stream)
@@ -51,10 +80,22 @@ namespace RichardSzalay.HostsFileExtension
 
             StreamWriter writer = new StreamWriter(stream);
 
-            foreach (string line in this.lines)
+            deletedLines.Sort();
+            Queue<int> deletedLinesQueue = new Queue<int>(deletedLines);
+
+            for (int i = 0; i < lines.Length; i++)
             {
-                writer.WriteLine(line);
+                if (deletedLinesQueue.Count > 0 && deletedLinesQueue.Peek() == i)
+                {
+                    deletedLinesQueue.Dequeue();
+                }
+                else
+                {
+                    writer.WriteLine(lines[i]);
+                }
             }
+
+            writer.Flush();
         }
 
         private void ApplyChanges()
@@ -79,6 +120,42 @@ namespace RichardSzalay.HostsFileExtension
             lines = newLines.ToArray();
         }
 
+        public void DeleteEntry(HostEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException("entry");
+            }
+
+            if (entries.Contains(entry))
+            {
+                if (!(entry.IsNew || deletedLines.Contains(entry.Line)))
+                {
+                    deletedLines.Add(entry.Line);
+                }
+
+                entries.Remove(entry);
+            }
+        }
+
+        public void AddEntry(HostEntry entry)
+        {
+            if (entry == null)
+            {
+                throw new ArgumentNullException("entry");
+            }
+
+            if (HostEntry.IsIgnoredHostname(entry.Hostname))
+            {
+                throw new ArgumentException("The following hostnames cannot be configured: " + String.Join(", ", HostEntry.IgnoredHostnames));
+            }
+
+            if (!entries.Contains(entry))
+            {
+                entries.Add(entry);
+            }
+        }
+
         public IEnumerable<HostEntry> Entries
         {
             get { return entries; }
@@ -86,7 +163,7 @@ namespace RichardSzalay.HostsFileExtension
 
         public bool IsDirty
         {
-            get { return entries.Any(c => c.IsDirty); }
+            get { return entries.Any(c => c.IsDirty) || deletedLines.Count > 0; }
         }
 
         private HostEntry ParseHostEntry(int lineIndex, string line)
@@ -103,7 +180,7 @@ namespace RichardSzalay.HostsFileExtension
                 return null;
             }
 
-            bool enabled = match.Groups["Enabled"].Success;
+            bool enabled = !match.Groups["Disabled"].Success;
             string address = match.Groups["Address"].Value;
             string spacer = match.Groups["Spacer"].Value;
             string hostname = match.Groups["Hostname"].Value;
@@ -124,7 +201,7 @@ namespace RichardSzalay.HostsFileExtension
         {
             List<string> lines = new List<string>();
 
-            StreamReader reader = new StreamReader(stream)
+            StreamReader reader = new StreamReader(stream);
             
             string line = reader.ReadLine();
 
@@ -137,5 +214,7 @@ namespace RichardSzalay.HostsFileExtension
 
             return lines.ToArray();
         }
+
+        private const string HostsFileLocation = @"%windir%\system32\drivers\etc\hosts";
     }
 }

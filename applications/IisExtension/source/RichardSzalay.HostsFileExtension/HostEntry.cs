@@ -5,8 +5,10 @@ using System.Text;
 
 namespace RichardSzalay.HostsFileExtension
 {
-    public class HostEntry
+    public class HostEntry : IEquatable<HostEntry>
     {
+        private const string CommentPrefix = "# ";
+
         private const string DefaultSpacer = "\t";
 
         private bool isDirty = false;
@@ -21,16 +23,11 @@ namespace RichardSzalay.HostsFileExtension
         private string comment;
 
         public HostEntry(string hostname, string address, string comment)
-            : this(-1, hostname, address, comment)
+            : this(-1, null, DefaultSpacer, true, hostname, address, comment)
         {
         }
 
-        public HostEntry(int line, string hostname, string address, string comment)
-            : this(line, null, DefaultSpacer, true, hostname, address, comment)
-        {
-        }
-
-        public HostEntry(int line, string originalLine, string spacer, bool enabled, string hostname, string address, string comment)
+        internal HostEntry(int line, string originalLine, string spacer, bool enabled, string hostname, string address, string comment)
         {
             this.line = line;
             this.originalLine = originalLine;
@@ -42,7 +39,18 @@ namespace RichardSzalay.HostsFileExtension
             this.comment = comment;
         }
 
-        public int Line { get; private set; }
+        public int Line
+        {
+            get { return line; }
+            private set
+            {
+                if (line != value)
+                {
+                    line = value;
+                    isDirty = true;
+                }
+            }
+        }
 
         public string Hostname
         {
@@ -98,20 +106,20 @@ namespace RichardSzalay.HostsFileExtension
 
         public void SwapLine(HostEntry other)
         {
-            int otherLine = other.line;
+            int otherLine = other.Line;
 
-            other.line = this.line;
-            this.line = otherLine;
+            other.Line = this.Line;
+            this.Line = otherLine;
         }
 
         public bool IsDirty
         {
-            get { return isDirty || IsNew; }
+            get { return isDirty || IsNew || String.IsNullOrEmpty(originalLine); }
         }
 
         public bool IsNew
         {
-            get { return line == -1 || String.IsNullOrEmpty(originalLine); }
+            get { return Line == -1; }
         }
 
         public override string ToString()
@@ -131,6 +139,7 @@ namespace RichardSzalay.HostsFileExtension
 
                 if (!String.IsNullOrEmpty(comment))
                 {
+                    sb.Append(" ");
                     sb.Append(CommentPrefix);
                     sb.Append(comment);
                 }
@@ -143,6 +152,30 @@ namespace RichardSzalay.HostsFileExtension
             }
         }
 
-        private const string CommentPrefix = "# ";
+        #region IEquatable<HostEntry> Members
+
+        public bool Equals(HostEntry other)
+        {
+            return other.Line == this.Line &&
+                other.originalLine == this.originalLine &&
+                other.enabled == this.enabled &&
+                other.isDirty == this.isDirty &&
+                other.hostname == this.hostname &&
+                other.address == this.address &&
+                other.comment == this.comment;
+        }
+
+        #endregion
+
+        public static bool IsIgnoredHostname(string hostname)
+        {
+            return ((IList<string>)IgnoredHostnames)
+                .Contains(hostname.ToLowerInvariant());
+        }
+
+        public static readonly string[] IgnoredHostnames = new string[]
+        {
+            "rhino.acme.com", "x.acme.com", "localhost"
+        };
     }
 }

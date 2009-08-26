@@ -8,9 +8,9 @@ namespace RichardSzalay.HostsFileExtension.View
 {
     public interface IManageHostsModulePage
     {
-        event EventHandler Refresh;
+        event EventHandler Refreshing;
         event EventHandler Load;
 
-        public ListView.ListViewItemCollection HostEntries { get; set; }
+        ListView.ListViewItemCollection HostEntries { get; }
     }
 }

@@ -22,7 +22,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void UpdateData()
         {
-            hostsFile = new HostsFile(HostsFileLocation);
+            hostsFile = new HostsFile();
 
             view.HostEntries.Clear();
 
@@ -43,6 +43,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             }
         }
 
-        private const string HostsFileLocation = @"%windir%\system32\drivers\etc\hosts";
+        
     }
 }

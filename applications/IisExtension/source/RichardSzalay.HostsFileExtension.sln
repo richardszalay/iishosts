@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichardSzalay.HostsFileExtension", "RichardSzalay.HostsFileExtension\RichardSzalay.HostsFileExtension.csproj", "{3CFA44AA-60BF-4B61-BD75-9498DFB48257}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichardSzalay.HostsFileExtension.Tests", "RichardSzalay.HostsFileExtension.Tests\RichardSzalay.HostsFileExtension.Tests.csproj", "{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -13,6 +15,10 @@ Global
 		{3CFA44AA-60BF-4B61-BD75-9498DFB48257}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3CFA44AA-60BF-4B61-BD75-9498DFB48257}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3CFA44AA-60BF-4B61-BD75-9498DFB48257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42E977EA-EA87-4341-9DD4-BB706BCDC5CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
