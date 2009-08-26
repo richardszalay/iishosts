@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Web.Management.Client.Win32;
 using Microsoft.Web.Administration;
 using System.Windows.Forms;
+using Microsoft.Web.Management.Client;
+using RichardSzalay.HostsFileExtension.Properties;
 
 namespace RichardSzalay.HostsFileExtension.View
 {

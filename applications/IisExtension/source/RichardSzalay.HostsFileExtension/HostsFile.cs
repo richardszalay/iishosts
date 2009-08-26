@@ -30,7 +30,7 @@ namespace RichardSzalay.HostsFileExtension
         {
         }
 
-        public HostsFile(string filename)
+        internal HostsFile(string filename)
             : this(new FileInfoResource(filename))
         {
             

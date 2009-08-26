@@ -35,4 +35,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
-[assembly: InternalsVisibleTo("RichardSzalay.HostsFileExtension.Tests")]
+[assembly: InternalsVisibleTo("RichardSzalay.HostsFileExtension.Tests, PublicKey=" +
+    "0024000004800000940000000602000000240000525341310004000001000100df8d69c003b1af" +
+    "31b23874937e6286b1383026efbc45093d98ff9046aa3bfc91cfb01125a853720f300da7ccf7af" +
+    "7342ff20d7240acd4384927fbf98732cc6d895d6f966f99e54940a2c1098560f982ffb4ccbeb8a" +
+    "b50ef059f5408df0bae3c9c15fda388de28f6cf5f2cdd9496e50d808f4eb05976d2546f29c7130" +
+    "78190bb3")]

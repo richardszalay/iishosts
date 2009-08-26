@@ -12,6 +12,8 @@ namespace RichardSzalay.HostsFileExtension.Tests
         [Test]
         public void Constructor_AssignsProperties()
         {
+            string s = typeof(HostEntryFixture).Assembly.FullName;
+
             HostEntry entry = new HostEntry("hostname", "address", "comment");
             
             Assert.AreEqual("hostname", entry.Hostname);

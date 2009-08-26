@@ -12,6 +12,8 @@
     <AssemblyName>RichardSzalay.HostsFileExtension</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>RichardSzalay.HostsFileExtension.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -62,11 +64,27 @@
     <Compile Include="HostsFile.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Registration\ManageHostsModule.cs" />
+    <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
     <Compile Include="View\IManageHostsModulePage.cs" />
     <Compile Include="View\ManageHostsModulePage.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RichardSzalay.HostsFileExtension.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -76,4 +94,8 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <PostBuildEvent>call "%25VS90COMNTOOLS%25\vsvars32.bat" &gt; NULL 
+gacutil.exe /if "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
