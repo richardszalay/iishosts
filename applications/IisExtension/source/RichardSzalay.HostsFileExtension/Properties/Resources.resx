@@ -117,8 +117,38 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AddHostEntryDescription" xml:space="preserve">
+    <value>Add a new hostname</value>
+  </data>
+  <data name="AddHostEntryTask" xml:space="preserve">
+    <value>Add...</value>
+  </data>
+  <data name="DeleteHostEntryDescription" xml:space="preserve">
+    <value>Delete the selected hostname</value>
+  </data>
+  <data name="DeleteHostEntryTask" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="DisableHostEntriesDescription" xml:space="preserve">
+    <value>Disable selected hostnames</value>
+  </data>
+  <data name="DisableHostEntriesTask" xml:space="preserve">
+    <value>Disable</value>
+  </data>
+  <data name="EditHostEntryDescription" xml:space="preserve">
+    <value>Edit the selected hostname</value>
+  </data>
+  <data name="EditHostEntryTask" xml:space="preserve">
+    <value>Edit...</value>
+  </data>
+  <data name="EnableHostEntriesDescription" xml:space="preserve">
+    <value>Enable selected hostnames</value>
+  </data>
+  <data name="EnableHostEntriesTask" xml:space="preserve">
+    <value>Enable</value>
+  </data>
   <data name="ManageHostsIconDescription" xml:space="preserve">
-    <value>Manage hostnames in the local hosts file</value>
+    <value>Use this feature to manage host names in your local hosts file</value>
   </data>
   <data name="ManageHostsIconTitle" xml:space="preserve">
     <value>Manage Local Hosts</value>

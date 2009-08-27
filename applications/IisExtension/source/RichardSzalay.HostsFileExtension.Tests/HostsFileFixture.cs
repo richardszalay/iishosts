@@ -45,6 +45,16 @@ namespace RichardSzalay.HostsFileExtension.Tests
         }
 
         [Test]
+        public void Load_HostnameCanIncludeHyphen()
+        {
+            StringResource resource = new StringResource("127.0.0.1		host1-localhost # comment 1");
+
+            HostsFile file = new HostsFile(resource);
+
+            Assert.AreEqual("host1-localhost", file.Entries.First().Hostname);
+        }
+
+        [Test]
         public void Load_ExcludesIgnoredHosts()
         {
             StringResource resource = new StringResource(Resources.DefaultHostsFile);

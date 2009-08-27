@@ -61,7 +61,97 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Manage hostnames in the local hosts file.
+        ///   Looks up a localized string similar to Add a new hostname.
+        /// </summary>
+        internal static string AddHostEntryDescription {
+            get {
+                return ResourceManager.GetString("AddHostEntryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add....
+        /// </summary>
+        internal static string AddHostEntryTask {
+            get {
+                return ResourceManager.GetString("AddHostEntryTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete the selected hostname.
+        /// </summary>
+        internal static string DeleteHostEntryDescription {
+            get {
+                return ResourceManager.GetString("DeleteHostEntryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        internal static string DeleteHostEntryTask {
+            get {
+                return ResourceManager.GetString("DeleteHostEntryTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable selected hostnames.
+        /// </summary>
+        internal static string DisableHostEntriesDescription {
+            get {
+                return ResourceManager.GetString("DisableHostEntriesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable.
+        /// </summary>
+        internal static string DisableHostEntriesTask {
+            get {
+                return ResourceManager.GetString("DisableHostEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit the selected hostname.
+        /// </summary>
+        internal static string EditHostEntryDescription {
+            get {
+                return ResourceManager.GetString("EditHostEntryDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit....
+        /// </summary>
+        internal static string EditHostEntryTask {
+            get {
+                return ResourceManager.GetString("EditHostEntryTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable selected hostnames.
+        /// </summary>
+        internal static string EnableHostEntriesDescription {
+            get {
+                return ResourceManager.GetString("EnableHostEntriesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable.
+        /// </summary>
+        internal static string EnableHostEntriesTask {
+            get {
+                return ResourceManager.GetString("EnableHostEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Use this feature to manage host names in your local hosts file.
         /// </summary>
         internal static string ManageHostsIconDescription {
             get {

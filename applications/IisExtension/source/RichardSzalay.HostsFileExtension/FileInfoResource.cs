@@ -29,6 +29,8 @@ namespace RichardSzalay.HostsFileExtension
 
         public Stream OpenWrite()
         {
+            this.file.Delete();
+
             return this.file.OpenWrite();
         }
 

@@ -20,7 +20,7 @@ namespace RichardSzalay.HostsFileExtension
         private const string EntryExpression = @"^(?'Disabled'\#)?\s*" +
             @"(?'Address'" + AddressExpression + @")" +
             @"(?'Spacer'\s+)" +
-            @"(?'Hostname'[\.\w]+)\s*" +
+            @"(?'Hostname'[^\s\#]+)\s*" +
             @"\#?\s*(?'Comment'.+)?$";
 
         private static readonly Regex lineRegex = new Regex(EntryExpression);
@@ -45,12 +45,21 @@ namespace RichardSzalay.HostsFileExtension
 
         public void Load()
         {
-            this.Load(this.resource.OpenRead());
+            using (Stream stream = this.resource.OpenRead())
+            {
+                this.Load(stream);
+            }
         }
 
         public void Save()
         {
-            this.Save(this.resource.OpenWrite());
+            using (Stream stream = this.resource.OpenWrite())
+            {
+                this.Save(stream);
+
+                stream.Flush();
+                stream.Close();
+            }
         }
 
         private void Load(Stream stream)

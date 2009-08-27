@@ -45,6 +45,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Presentation">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -71,6 +72,12 @@
     </Compile>
     <Compile Include="Registration\ManageHostsModule.cs" />
     <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
+    <Compile Include="View\EditHostEntryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\EditHostEntryForm.Designer.cs">
+      <DependentUpon>EditHostEntryForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="View\IManageHostsModulePage.cs" />
     <Compile Include="View\ManageHostsModulePage.cs">
       <SubType>Component</SubType>
@@ -84,6 +91,9 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\EditHostEntryForm.resx">
+      <DependentUpon>EditHostEntryForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
