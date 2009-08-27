@@ -93,6 +93,35 @@ namespace RichardSzalay.HostsFileExtension.View
             }
         }
 
+        protected override bool CanSearch
+        {
+            get { return true; }
+        }
+
+        protected override bool CanInstantSearch
+        {
+            get { return true;  }
+        }
+
+        protected override ModuleListPageSearchField[] SearchFields
+        {
+            get
+            {
+                return new ModuleListPageSearchField[]
+                {
+                    new ModuleListPageSearchField("Address", "Address"),
+                    new ModuleListPageSearchField("Hostname", "Hostname")
+                };
+            }
+        }
+
+        protected override void  OnSearch(ModuleListPageSearchOptions options)
+        {
+            presenter.FilterEntries(options.Text);
+        }
+
+
+
         protected override bool CanRefresh
         {
             get { return true; }

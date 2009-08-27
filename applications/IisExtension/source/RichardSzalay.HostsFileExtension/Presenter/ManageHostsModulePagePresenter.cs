@@ -18,6 +18,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private IManageHostsModulePage view;
         private HostsFile hostsFile;
 
+        private string filter;
+
         public ManageHostsModulePagePresenter(IManageHostsModulePage view)
         {
             this.view = view;
@@ -49,7 +51,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             hostsFile = new HostsFile();
 
-            view.SetHostEntries(hostsFile.Entries);
+            DisplayEntries();
         }
 
         private IEnumerable<HostEntry> SelectedEntries
@@ -77,7 +79,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 {
                     this.hostsFile.AddEntry(form.HostEntry);
 
-                    view.SetHostEntries(hostsFile.Entries);
+                    DisplayEntries();
                 }
             }
         }
@@ -94,7 +96,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 if (result == DialogResult.OK)
                 {
-                    view.SetHostEntries(hostsFile.Entries);
+                    DisplayEntries();
                 }
             }
         }
@@ -106,7 +108,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 hostsFile.DeleteEntry(entry);
             }
 
-            view.SetHostEntries(hostsFile.Entries);
+            DisplayEntries();
         }
 
         private void EnableSelectedEntries()
@@ -116,7 +118,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 entry.Enabled = true;
             }
 
-            view.SetHostEntries(hostsFile.Entries);
+            DisplayEntries();
         }
 
         private void DisableSelectedEntries()
@@ -126,7 +128,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 entry.Enabled = false;
             }
 
-            view.SetHostEntries(hostsFile.Entries);
+            DisplayEntries();
         }
 
         private void ApplyChanges()
@@ -139,6 +141,29 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private void CancelChanges()
         {
             this.UpdateData();
+        }
+
+        public void FilterEntries(string text)
+        {
+            this.filter = text;
+
+            this.DisplayEntries();
+        }
+
+        private void DisplayEntries()
+        {
+            var entries = this.hostsFile.Entries;
+
+            if (!String.IsNullOrEmpty(filter))
+            {
+                entries = entries.Where(c =>
+                    c.Address.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
+                    c.Hostname.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
+                    (c.Comment ?? "").IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1
+                    );
+            }
+
+            view.SetHostEntries(entries);
         }
 
         private class ManageHostsTaskList : TaskList
