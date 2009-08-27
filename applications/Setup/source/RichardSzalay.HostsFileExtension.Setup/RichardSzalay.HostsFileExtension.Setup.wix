@@ -1,0 +1,44 @@
+﻿<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+  <Product Id='0A9C2900-7FB6-4517-8010-B6DB1E179E0C' Name='Test Package' Language='1033'
+           Version='1.0.0.0' Manufacturer='Microsoft Corporation'>
+    <Package Id='FDF1CC7C-0C39-4a5c-BE22-7F5CBB7395F0'
+              Description='Adds a UI for managing the local hosts file to IIS 7'
+              Manufacturer='Richard Szalay' InstallerVersion='200' Compressed='yes' />
+
+    <Media Id='1' Cabinet='product.cab' EmbedCab='yes' />
+
+    <Directory Id='SourceDir' Name='SourceDir'>
+      <Directory Id='ProgramFilesFolder' Name='PFDir'>
+        <Directory Id='RichardSzalay' Name='RSzalay' LongName='Richard Szalay'>
+          <Directory Id='HostsFileExtension' Name='HostsExt' LongName='HostsFileExtension'>
+            <Component Id='DllsComponent' Guid='EAB28F44-EC1D-4557-BFAA-7626C1BFF04C'>
+              <File Id='HostsFileExtension' Name="HostsExt.dll" LongName='RichardSzalay.HostsFileExtension.dll' DiskId='1' src='RichardSzalay.HostsFileExtension.dll'
+                    Assembly='.net' />
+              <File Id='Installer' Name="Setup.dll" LongName='RichardSzalay.HostsFileExtension.Setup.dll' DiskId='1' src='RichardSzalay.HostsFileExtension.Setup.dll' />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <Feature Id='DllsFeature' Title='HostsFileExtension' Level='1'>
+      <ComponentRef Id='DllsComponent' />
+    </Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action='ManagedInstall' After="MsiPublishAssemblies" />
+      <Custom Action='ManagedUninstall' After="MsiUnpublishAssemblies" />
+    </InstallExecuteSequence>
+
+    <CustomAction Id="ManagedInstall"
+          Directory='HostsFileExtension'
+          ExeCommand='"[WindowsFolder]\Microsoft.NET\Framework\v2.0.50727\installUtil.exe" /LogToConsole=false RichardSzalay.HostsFileExtension.Setup.dll'
+          Return='check' />
+
+    <CustomAction Id="ManagedUninstall"
+          Directory='HostsFileExtension'
+          ExeCommand='"[WindowsFolder]\Microsoft.NET\Framework\v2.0.50727\installUtil.exe" /u /LogToConsole=false RichardSzalay.HostsFileExtension.Setup.dll'
+          Return='check' />
+  </Product>
+</Wix>
