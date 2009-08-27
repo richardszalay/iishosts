@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,58 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AddHostEntryDescription" xml:space="preserve">
-    <value>Add a new hostname</value>
-  </data>
-  <data name="AddHostEntryDialogTitle" xml:space="preserve">
-    <value>Add Hosts Entry</value>
-  </data>
-  <data name="AddHostEntryTask" xml:space="preserve">
-    <value>Add...</value>
-  </data>
-  <data name="DeleteHostEntryDescription" xml:space="preserve">
-    <value>Delete the selected hostname</value>
-  </data>
-  <data name="DeleteHostEntryTask" xml:space="preserve">
-    <value>Delete</value>
-  </data>
-  <data name="DisableHostEntriesDescription" xml:space="preserve">
-    <value>Disable selected hostnames</value>
-  </data>
-  <data name="DisableHostEntriesTask" xml:space="preserve">
-    <value>Disable</value>
-  </data>
-  <data name="EditHostEntryDescription" xml:space="preserve">
-    <value>Edit the selected hostname</value>
-  </data>
-  <data name="EditHostEntryDialogTitle" xml:space="preserve">
-    <value>Edit Hosts Entry</value>
-  </data>
-  <data name="EditHostEntryTask" xml:space="preserve">
-    <value>Edit...</value>
-  </data>
-  <data name="EnableHostEntriesDescription" xml:space="preserve">
-    <value>Enable selected hostnames</value>
-  </data>
-  <data name="EnableHostEntriesTask" xml:space="preserve">
-    <value>Enable</value>
-  </data>
-  <data name="HostEntryForm_AddressLabel" xml:space="preserve">
-    <value>&amp;Address</value>
-  </data>
-  <data name="HostEntryForm_CommentLabel" xml:space="preserve">
-    <value>&amp;Comment</value>
-  </data>
-  <data name="HostEntryForm_EnabledLabel" xml:space="preserve">
-    <value>&amp;Enabled</value>
-  </data>
-  <data name="HostEntryForm_HostnameLabel" xml:space="preserve">
-    <value>&amp;Hostname</value>
-  </data>
-  <data name="ManageHostsIconDescription" xml:space="preserve">
-    <value>Use this feature to manage host names in your local hosts file</value>
-  </data>
-  <data name="ManageHostsIconTitle" xml:space="preserve">
-    <value>Manage Local Hosts</value>
-  </data>
 </root>

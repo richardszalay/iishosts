@@ -70,6 +70,15 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add Hosts Entry.
+        /// </summary>
+        internal static string AddHostEntryDialogTitle {
+            get {
+                return ResourceManager.GetString("AddHostEntryDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add....
         /// </summary>
         internal static string AddHostEntryTask {
@@ -124,6 +133,15 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Hosts Entry.
+        /// </summary>
+        internal static string EditHostEntryDialogTitle {
+            get {
+                return ResourceManager.GetString("EditHostEntryDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit....
         /// </summary>
         internal static string EditHostEntryTask {
@@ -147,6 +165,42 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         internal static string EnableHostEntriesTask {
             get {
                 return ResourceManager.GetString("EnableHostEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Address.
+        /// </summary>
+        internal static string HostEntryForm_AddressLabel {
+            get {
+                return ResourceManager.GetString("HostEntryForm_AddressLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Comment.
+        /// </summary>
+        internal static string HostEntryForm_CommentLabel {
+            get {
+                return ResourceManager.GetString("HostEntryForm_CommentLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Enabled.
+        /// </summary>
+        internal static string HostEntryForm_EnabledLabel {
+            get {
+                return ResourceManager.GetString("HostEntryForm_EnabledLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &amp;Hostname.
+        /// </summary>
+        internal static string HostEntryForm_HostnameLabel {
+            get {
+                return ResourceManager.GetString("HostEntryForm_HostnameLabel", resourceCulture);
             }
         }
         

@@ -59,6 +59,15 @@ namespace RichardSzalay.HostsFileExtension.View
 
             ListView.MultiSelect = true;
             ListView.SelectedIndexChanged += new EventHandler(ListView_SelectedIndexChanged);
+            ListView.DoubleClick += new EventHandler(ListView_DoubleClick);
+        }
+
+        void ListView_DoubleClick(object sender, EventArgs e)
+        {
+            if (this.ListView.SelectedIndices.Count == 1)
+            {
+                this.presenter.EditSelectedEntry();
+            }
         }
 
         void ListView_SelectedIndexChanged(object sender, EventArgs e)

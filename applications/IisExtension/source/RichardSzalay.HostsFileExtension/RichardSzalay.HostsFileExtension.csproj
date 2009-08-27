@@ -60,9 +60,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DnsAddressProvider.cs" />
     <Compile Include="FileInfoResource.cs" />
     <Compile Include="HostEntry.cs" />
     <Compile Include="HostsFile.cs" />
+    <Compile Include="IAddressProvider.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

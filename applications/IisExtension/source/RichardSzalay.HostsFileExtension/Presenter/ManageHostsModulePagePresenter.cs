@@ -64,8 +64,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void AddTask()
         {
-            using (var form = new EditHostEntryForm(view.ServiceProvider))
+            using (var form = new EditHostEntryForm(view.ServiceProvider, new DnsAddressProvider()))
             {
+                form.Text = Resources.AddHostEntryDialogTitle;
+
+                // TODO: Fix this default value
                 form.HostEntry = new HostEntry("", "127.0.0.1", null);
 
                 DialogResult result = view.ShowDialog(form);
@@ -79,10 +82,12 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             }
         }
 
-        private void EditTask()
+        public void EditSelectedEntry()
         {
-            using (var form = new EditHostEntryForm(view.ServiceProvider))
+            using (var form = new EditHostEntryForm(view.ServiceProvider, new DnsAddressProvider()))
             {
+                form.Text = Resources.EditHostEntryDialogTitle;
+
                 form.HostEntry = this.view.SelectedEntries.First();
 
                 DialogResult result = view.ShowDialog(form);
@@ -104,7 +109,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             view.SetHostEntries(hostsFile.Entries);
         }
 
-        private void EnableSelected()
+        private void EnableSelectedEntries()
         {
             foreach (HostEntry entry in this.view.SelectedEntries)
             {
@@ -114,7 +119,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             view.SetHostEntries(hostsFile.Entries);
         }
 
-        private void DisableSelected()
+        private void DisableSelectedEntries()
         {
             foreach (HostEntry entry in this.view.SelectedEntries)
             {
@@ -139,6 +144,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private class ManageHostsTaskList : TaskList
         {
             private const string ActionsCategory = "Actions";
+            private const string EnableCategory = "Enable";
             private const string ChangesCategory = "Changes";
 
             private ResourceManager iisUIResources = new ResourceManager("Microsoft.Web.Management.Resources", typeof(ModulePage).Assembly);
@@ -174,8 +180,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                     bool firstEntryEnabled = firstSelectedEntry.Enabled;
 
-                    bool showDisableTask = firstEntryEnabled;
-                    bool showEnableTask = !showDisableTask;
+                    bool showDisableTask = multipleSelected || firstEntryEnabled;
+                    bool showEnableTask = multipleSelected || !showDisableTask;
 
                     if (!multipleSelected)
                     {
@@ -228,7 +234,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             public void EditTask()
             {
-                this.owner.EditTask();
+                this.owner.EditSelectedEntry();
             }
 
             public void DeleteSelected()
@@ -238,12 +244,12 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             public void EnableSelected()
             {
-                this.owner.EnableSelected();
+                this.owner.EnableSelectedEntries();
             }
 
             public void DisableSelected()
             {
-                this.owner.DisableSelected();
+                this.owner.DisableSelectedEntries();
             }
 
             public void ApplyChanges()
@@ -297,7 +303,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 TaskItem enableTask = new MethodTaskItem(
                                 "EnableSelected",
                                  Resources.EnableHostEntriesTask,
-                                 ActionsCategory,
+                                 EnableCategory,
                                  Resources.EnableHostEntriesDescription
                                  );
 
@@ -309,7 +315,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 TaskItem enableTask = new MethodTaskItem(
                                 "DisableSelected",
                                  Resources.DisableHostEntriesTask,
-                                 ActionsCategory,
+                                 EnableCategory,
                                  Resources.DisableHostEntriesDescription
                                  );
                 return enableTask;
