@@ -16,6 +16,7 @@ namespace RichardSzalay.HostsFileExtension.Registration
             base.Initialize(serviceProvider, moduleInfo);
 
             IControlPanel controlPanel = (IControlPanel)serviceProvider.GetService(typeof(IControlPanel));
+            IExtensibilityManager extensibilityManager = (IExtensibilityManager)serviceProvider.GetService(typeof(IExtensibilityManager));
 
             ModulePageInfo modulePageInfo = new ModulePageInfo(
                 this,
@@ -27,6 +28,8 @@ namespace RichardSzalay.HostsFileExtension.Registration
                 );
 
             controlPanel.RegisterPage(ControlPanelCategoryInfo.Management, modulePageInfo);
+
+            extensibilityManager.RegisterExtension(
         }
 
         protected override bool IsPageEnabled(ModulePageInfo pageInfo)
