@@ -1,3 +1,0 @@
-obj\Debug\Product.wixobj
-C:\Users\richard.szalay\Personal\RichardSzalay.HostsFileExtension\applications\Setup\RichardSzalay.HostsFileExtension.Setup\bin\Debug\RichardSzalay.HostsFileExtension.Setup.wixpdb
-C:\Users\richard.szalay\Personal\RichardSzalay.HostsFileExtension\applications\Setup\source\RichardSzalay.HostsFileExtension.Setup\bin\Debug\RichardSzalay.HostsFileExtension.Setup.wixpdb
