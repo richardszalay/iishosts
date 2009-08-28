@@ -1,0 +1,7 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Windows\System32\msiexec.exe</StartProgram>
+    <StartArguments>/i C:\Users\richard.szalay\Personal\RichardSzalay.HostsFileExtension\applications\Setup\RichardSzalay.HostsFileExtension.Setup\bin\Debug\RichardSzalay.HostsFileExtension.Setup.msi</StartArguments>
+  </PropertyGroup>
+</Project>
