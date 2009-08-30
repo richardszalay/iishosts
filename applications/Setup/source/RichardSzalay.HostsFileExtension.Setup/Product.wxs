@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <?define ExtensionDll = "$(sys.CURRENTDIR)\..\..\..\IisExtension\source\RichardSzalay.HostsFileExtension\bin\Release\RichardSzalay.HostsFileExtension.dll" ?>
+  
+	<Product Id="e4dee341-5fad-463d-a73c-0783a59a6d23" Name="Hosts Management add-in for IIS 7" 
+           Language="1033" Version="0.1.0.0" Manufacturer="Richard Szalay" 
+           UpgradeCode="4b5339df-1968-4484-b048-0a82ce733ffe">
+    
+		<Package InstallerVersion="200" Compressed="yes" InstallPrivileges="elevated"/>
+
+		<Media Id="1" Cabinet="media1.cab" EmbedCab="yes" />
+    
+    <?if $(sys.BUILDARCH) = x64?>
+
+		  <Directory Id="TARGETDIR" Name="SourceDir">
+			  <Directory Id="ProgramFiles64Folder">
+          <Directory Id="INSTALLLOCATION" Name="Richard Szalay">
+            <Directory Id="HostsFileExtension" Name="HostsFileExtension">
+              <Component Id="ProductComponent" Guid="9a59e727-cbd7-42f3-b605-1c319e0a72d9">
+                <File Id="RichardSzalay.HostsFileExtension.dll" 
+                      Source="$(var.ExtensionDll)" KeyPath="yes" Checksum="yes" />
+              </Component>
+            </Directory>
+				  </Directory>
+			  </Directory>
+		  </Directory>
+
+    <?endif ?>
+
+    <?if $(sys.BUILDARCH) = x86?>
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="INSTALLLOCATION" Name="Richard Szalay">
+          <Directory Id="HostsFileExtension" Name="HostsFileExtension">
+            <Component Id="ProductComponent" Guid="9a59e727-cbd7-42f3-b605-1c319e0a72d9">
+              <File Id="RichardSzalay.HostsFileExtension.dll"
+                    Source="$(var.ExtensionDll)" KeyPath="yes" Checksum="yes" />
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>
+    </Directory>
+
+    <?endif ?>
+    
+		<Feature Id="ProductFeature" Title="RichardSzalay.HostsFileExtension.Setup" Level="1">
+			<ComponentRef Id="ProductComponent" />
+		</Feature>
+
+    <InstallExecuteSequence>
+      <Custom Action="InstallUIModuleAction" After="MsiPublishAssemblies"><![CDATA[$ProductComponent > 2]]></Custom>
+      <Custom Action="UninstallUIModuleAction" Before="RemoveFiles"><![CDATA[$ProductComponent = 2]]></Custom>
+    </InstallExecuteSequence>
+
+
+    <Binary Id="SetupActionsCA" SourceFile="$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetDir)$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetName).CA.dll" />
+    <!--<Binary Id="SetupActions" SourceFile="$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetDir)$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetName).dll" />-->
+
+    <CustomAction Id="InstallUIModuleAction" BinaryKey="SetupActionsCA" DllEntry="InstallUIModule"
+                  Execute="deferred" Impersonate="no" />
+
+    <CustomAction Id="UninstallUIModuleAction" BinaryKey="SetupActionsCA" DllEntry="UninstallUIModule"
+                  Execute="deferred" Impersonate="no" />
+
+	</Product>
+</Wix>
