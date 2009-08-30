@@ -30,13 +30,13 @@
         {
             this.label1 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.addressComboBox = new System.Windows.Forms.ComboBox();
             this.enabledCheckBox = new System.Windows.Forms.CheckBox();
             this.commentTextBox = new System.Windows.Forms.TextBox();
             this.commentLabel = new System.Windows.Forms.Label();
             this.hostnameTextBox = new System.Windows.Forms.TextBox();
             this.hostnameLabel = new System.Windows.Forms.Label();
             this.addressLabel = new System.Windows.Forms.Label();
-            this.addressComboBox = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -63,6 +63,14 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(406, 268);
             this.panel1.TabIndex = 3;
+            // 
+            // addressComboBox
+            // 
+            this.addressComboBox.FormattingEnabled = true;
+            this.addressComboBox.Location = new System.Drawing.Point(110, 12);
+            this.addressComboBox.Name = "addressComboBox";
+            this.addressComboBox.Size = new System.Drawing.Size(284, 21);
+            this.addressComboBox.TabIndex = 1;
             // 
             // enabledCheckBox
             // 
@@ -117,14 +125,6 @@
             this.addressLabel.Size = new System.Drawing.Size(48, 13);
             this.addressLabel.TabIndex = 0;
             this.addressLabel.Text = "&Address:";
-            // 
-            // addressComboBox
-            // 
-            this.addressComboBox.FormattingEnabled = true;
-            this.addressComboBox.Location = new System.Drawing.Point(110, 12);
-            this.addressComboBox.Name = "addressComboBox";
-            this.addressComboBox.Size = new System.Drawing.Size(284, 21);
-            this.addressComboBox.TabIndex = 7;
             // 
             // EditHostEntryForm
             // 

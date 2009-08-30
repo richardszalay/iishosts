@@ -28,8 +28,6 @@ namespace RichardSzalay.HostsFileExtension.Registration
                 );
 
             controlPanel.RegisterPage(ControlPanelCategoryInfo.Management, modulePageInfo);
-
-            extensibilityManager.RegisterExtension(
         }
 
         protected override bool IsPageEnabled(ModulePageInfo pageInfo)

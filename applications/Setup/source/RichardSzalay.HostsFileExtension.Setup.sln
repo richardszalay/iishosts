@@ -7,16 +7,26 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichardSzalay.HostsFileExte
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Debug|x64.ActiveCfg = Debug|x64
+		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Debug|x64.Build.0 = Debug|x64
 		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Debug|x86.ActiveCfg = Debug|x86
 		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Debug|x86.Build.0 = Debug|x86
+		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Release|x64.ActiveCfg = Release|x64
+		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Release|x64.Build.0 = Release|x64
 		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Release|x86.ActiveCfg = Release|x86
 		{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}.Release|x86.Build.0 = Release|x86
+		{556B1CA8-2737-4147-9EE2-D339FED55615}.Debug|x64.ActiveCfg = Debug|x64
+		{556B1CA8-2737-4147-9EE2-D339FED55615}.Debug|x64.Build.0 = Debug|x64
 		{556B1CA8-2737-4147-9EE2-D339FED55615}.Debug|x86.ActiveCfg = Debug|x86
 		{556B1CA8-2737-4147-9EE2-D339FED55615}.Debug|x86.Build.0 = Debug|x86
+		{556B1CA8-2737-4147-9EE2-D339FED55615}.Release|x64.ActiveCfg = Release|x64
+		{556B1CA8-2737-4147-9EE2-D339FED55615}.Release|x64.Build.0 = Release|x64
 		{556B1CA8-2737-4147-9EE2-D339FED55615}.Release|x86.ActiveCfg = Release|x86
 		{556B1CA8-2737-4147-9EE2-D339FED55615}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection

@@ -9,6 +9,11 @@ namespace RichardSzalay.HostsFileExtension
 {
     public class ManageHostsProtocolProvider : ProtocolProvider
     {
+        public ManageHostsProtocolProvider(IServiceProvider serviceProvider)
+            : base(serviceProvider)
+        {
+        }
+
         public override TaskList GetSiteTaskList(string siteName, ICollection<string> bindingProtocols)
         {
             return null;

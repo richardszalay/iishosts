@@ -18,7 +18,7 @@ namespace RichardSzalay.HostsFileExtension.View
         private bool hasChanges = false;
         private bool canAccept = false;
 
-        private IAddressProvider addressProvider;
+        private const int MaxTabIndex = 7;
 
         public EditHostEntryForm()
             : this(null, null)
@@ -40,6 +40,11 @@ namespace RichardSzalay.HostsFileExtension.View
                 addressComboBox.Items.Clear();
                 addressComboBox.Items.AddRange(addressProvider.GetAddresses());
             }
+
+            ((Control)base.AcceptButton).TabIndex = MaxTabIndex + 1;
+            ((Control)base.CancelButton).TabIndex = MaxTabIndex + 2;
+
+            hostnameTextBox.Focus();
         }
 
         protected override void OnAccept()
@@ -64,11 +69,13 @@ namespace RichardSzalay.HostsFileExtension.View
             hostnameTextBox.Text = hostEntry.Hostname;
             commentTextBox.Text = hostEntry.Comment;
             enabledCheckBox.Checked = hostEntry.Enabled;
+
+            hasChanges = false;
         }
 
         protected override bool CanAccept
         {
-            get { return canAccept; }
+            get { return canAccept && hasChanges; }
         }
 
         private void OnTextBoxTextChanged(object sender, EventArgs e)

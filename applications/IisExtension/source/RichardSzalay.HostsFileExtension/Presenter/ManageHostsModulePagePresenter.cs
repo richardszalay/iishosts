@@ -79,7 +79,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 {
                     this.hostsFile.AddEntry(form.HostEntry);
 
-                    DisplayEntries();
+                    this.ApplyChanges();
                 }
             }
         }
@@ -96,39 +96,57 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 if (result == DialogResult.OK)
                 {
-                    DisplayEntries();
+                    this.ApplyChanges();
                 }
             }
         }
 
         private void DeleteSelected()
         {
-            foreach (HostEntry entry in this.view.SelectedEntries.ToList())
-            {
-                hostsFile.DeleteEntry(entry);
-            }
+            DialogResult result = MessageBox.Show(view, Resources.DeleteEntriesConfirmation, Resources.DeleteEntriesConfirmationTitle,
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            DisplayEntries();
+            if (result == DialogResult.Yes)
+            {
+                foreach (HostEntry entry in this.view.SelectedEntries.ToList())
+                {
+                    hostsFile.DeleteEntry(entry);
+                }
+
+                this.ApplyChanges();
+            }
         }
 
         private void EnableSelectedEntries()
         {
-            foreach (HostEntry entry in this.view.SelectedEntries)
-            {
-                entry.Enabled = true;
-            }
+            DialogResult result = MessageBox.Show(view, Resources.EnableEntriesConfirmation, Resources.EnableEntriesConfirmationTitle,
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            DisplayEntries();
+            if (result == DialogResult.Yes)
+            {
+                foreach (HostEntry entry in this.view.SelectedEntries)
+                {
+                    entry.Enabled = true;
+                }
+
+                this.ApplyChanges();
+            }
         }
 
         private void DisableSelectedEntries()
         {
-            foreach (HostEntry entry in this.view.SelectedEntries)
-            {
-                entry.Enabled = false;
-            }
+            DialogResult result = MessageBox.Show(view, Resources.DisableEntriesConfirmation, Resources.DisableEntriesConfirmationTitle,
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-            DisplayEntries();
+            if (result == DialogResult.Yes)
+            {
+                foreach (HostEntry entry in this.view.SelectedEntries)
+                {
+                    entry.Enabled = false;
+                }
+
+                this.ApplyChanges();
+            }
         }
 
         private void ApplyChanges()
@@ -226,9 +244,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     }
                 }
 
-                list.Add(CreateApplyChangesTask());
-                list.Add(CreateCancelChangesTask());
-
                 return list;
             }
 
@@ -275,16 +290,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             public void DisableSelected()
             {
                 this.owner.DisableSelectedEntries();
-            }
-
-            public void ApplyChanges()
-            {
-                this.owner.ApplyChanges();
-            }
-
-            public void CancelChanges()
-            {
-                this.owner.CancelChanges();
             }
 
             #region Task Definitions
@@ -344,22 +349,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                                  Resources.DisableHostEntriesDescription
                                  );
                 return enableTask;
-            }
-
-            private TaskItem CreateApplyChangesTask()
-            {
-                TaskItem applyChangesTask = CreateTaskItem("ApplyChanges", ChangesCategory);
-                applyChangesTask.Enabled = ((this.owner.HasChanges && this.owner.CanApplyChanges));
-
-                return applyChangesTask;
-            }
-
-            private TaskItem CreateCancelChangesTask()
-            {
-                TaskItem cancelChangesTask = CreateTaskItem("CancelChanges", ChangesCategory);
-                cancelChangesTask.Enabled = (this.owner.HasChanges);
-
-                return cancelChangesTask;
             }
 
             #endregion

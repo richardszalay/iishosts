@@ -126,11 +126,23 @@
   <data name="AddHostEntryTask" xml:space="preserve">
     <value>Add...</value>
   </data>
+  <data name="DeleteEntriesConfirmation" xml:space="preserve">
+    <value>Are you sure that you want to delete the selected host entries?</value>
+  </data>
+  <data name="DeleteEntriesConfirmationTitle" xml:space="preserve">
+    <value>Delete Host Entries</value>
+  </data>
   <data name="DeleteHostEntryDescription" xml:space="preserve">
     <value>Delete the selected hostname</value>
   </data>
   <data name="DeleteHostEntryTask" xml:space="preserve">
     <value>Delete</value>
+  </data>
+  <data name="DisableEntriesConfirmation" xml:space="preserve">
+    <value>Are you sure that you want to disable the selected host entries?</value>
+  </data>
+  <data name="DisableEntriesConfirmationTitle" xml:space="preserve">
+    <value>Disable Host Entries</value>
   </data>
   <data name="DisableHostEntriesDescription" xml:space="preserve">
     <value>Disable selected hostnames</value>
@@ -146,6 +158,12 @@
   </data>
   <data name="EditHostEntryTask" xml:space="preserve">
     <value>Edit...</value>
+  </data>
+  <data name="EnableEntriesConfirmation" xml:space="preserve">
+    <value>Are you sure that you want to enable the selected host entries?</value>
+  </data>
+  <data name="EnableEntriesConfirmationTitle" xml:space="preserve">
+    <value>Enable Host Entries</value>
   </data>
   <data name="EnableHostEntriesDescription" xml:space="preserve">
     <value>Enable selected hostnames</value>

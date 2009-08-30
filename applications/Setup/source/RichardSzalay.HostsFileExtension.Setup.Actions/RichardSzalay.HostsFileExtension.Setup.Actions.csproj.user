@@ -4,4 +4,9 @@
     <StartProgram>C:\Windows\System32\msiexec.exe</StartProgram>
     <StartArguments>/i C:\Users\richard.szalay\Personal\RichardSzalay.HostsFileExtension\applications\Setup\RichardSzalay.HostsFileExtension.Setup\bin\Debug\RichardSzalay.HostsFileExtension.Setup.msi</StartArguments>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <StartProgram>C:\Windows\System32\msiexec.exe</StartProgram>
+    <StartArguments>/i C:\Users\richard.szalay\Personal\RichardSzalay.HostsFileExtension\applications\Setup\RichardSzalay.HostsFileExtension.Setup\bin\Debug\RichardSzalay.HostsFileExtension.Setup.msi</StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>

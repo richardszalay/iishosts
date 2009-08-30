@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Deployment.WindowsInstaller;
 using System.Reflection;
+using System.ComponentModel;
 
 namespace RichardSzalay.HostsFileExtension.Setup.Actions
 {
@@ -19,7 +20,7 @@ namespace RichardSzalay.HostsFileExtension.Setup.Actions
 
             IisInstallUtil.AddUIModuleProvider(UIModuleKey, ExtensionQualifiedName);
 
-            session.Log("Installing UIModuleProvider complete");
+            session.Log("Installation of UIModuleProvider complete");
 
             return ActionResult.Success;
         }
@@ -29,7 +30,11 @@ namespace RichardSzalay.HostsFileExtension.Setup.Actions
         {
             try
             {
+                session.Log("Uninstalling UIModuleProvider {0}", UIModuleKey);
+
                 IisInstallUtil.RemoveUIModuleProvider(UIModuleKey);
+
+                session.Log("Uninstallation of UIModuleProvider complete");
             }
             catch (Exception ex)
             {
