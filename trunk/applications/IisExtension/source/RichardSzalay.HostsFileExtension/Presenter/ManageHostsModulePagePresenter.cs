@@ -10,13 +10,16 @@ using Microsoft.Web.Management.Client.Win32;
 using RichardSzalay.HostsFileExtension.Properties;
 using System.Collections;
 using System.Resources;
+using RichardSzalay.HostsFileExtension.Service;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
     public class ManageHostsModulePagePresenter
     {
         private IManageHostsModulePage view;
-        private HostsFile hostsFile;
+        private IEnumerable<HostEntry> hostEntries;
+
+        private ManageHostsFileModuleProxy proxy;
 
         private string filter;
 
@@ -25,6 +28,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             this.view = view;
             this.view.Initialized += new EventHandler(view_HandleCreated);
             this.view.Refreshing += new EventHandler(view_Refreshing);
+
+            this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
         }
 
         void view_Refreshing(object sender, EventArgs e)
@@ -43,13 +48,13 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             get
             {
-                return hostsFile.IsDirty;
+                return false;
             }
         }
 
         private void UpdateData()
         {
-            hostsFile = new HostsFile();
+            this.hostEntries = this.proxy.GetEntries();
 
             DisplayEntries();
         }
@@ -77,9 +82,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 if (result == DialogResult.OK)
                 {
-                    this.hostsFile.AddEntry(form.HostEntry);
-
-                    this.ApplyChanges();
+                    this.proxy.AddEntry(form.HostEntry);
+                    this.UpdateData();
                 }
             }
         }
@@ -90,13 +94,19 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             {
                 form.Text = Resources.EditHostEntryDialogTitle;
 
-                form.HostEntry = this.view.SelectedEntries.First();
+                HostEntry entry = this.view.SelectedEntries.First();
+                HostEntry originalEntry = entry.Clone();
+
+                form.HostEntry = entry;
 
                 DialogResult result = view.ShowDialog(form);
 
                 if (result == DialogResult.OK)
                 {
-                    this.ApplyChanges();
+                    this.proxy.EditEntries(
+                        new List<HostEntry>() { originalEntry },
+                        new List<HostEntry>() { form.HostEntry }
+                        );
                 }
             }
         }
@@ -108,12 +118,9 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                foreach (HostEntry entry in this.view.SelectedEntries.ToList())
-                {
-                    hostsFile.DeleteEntry(entry);
-                }
+                IList<HostEntry> entries = this.view.SelectedEntries.ToList();
 
-                this.ApplyChanges();
+                this.proxy.DeleteEntries(entries);
             }
         }
 
@@ -124,12 +131,15 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                foreach (HostEntry entry in this.view.SelectedEntries)
+                IList<HostEntry> originalEntries = this.view.SelectedEntries.ToList();
+                IList<HostEntry> changedEntries = CloneEntries(originalEntries);
+
+                foreach (HostEntry entry in changedEntries)
                 {
                     entry.Enabled = true;
                 }
 
-                this.ApplyChanges();
+                this.proxy.EditEntries(originalEntries, changedEntries);
             }
         }
 
@@ -140,20 +150,28 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                foreach (HostEntry entry in this.view.SelectedEntries)
+                IList<HostEntry> originalEntries = this.view.SelectedEntries.ToList();
+                IList<HostEntry> changedEntries = CloneEntries(originalEntries);
+
+                foreach (HostEntry entry in changedEntries)
                 {
-                    entry.Enabled = false;
+                    entry.Enabled = true;
                 }
 
-                this.ApplyChanges();
+                this.proxy.EditEntries(originalEntries, changedEntries);
             }
         }
 
-        private void ApplyChanges()
+        private IList<HostEntry> CloneEntries(IList<HostEntry> input)
         {
-            hostsFile.Save();
+            List<HostEntry> output = new List<HostEntry>(input.Count);
 
-            this.UpdateData();
+            for (int i = 0; i < input.Count; i++)
+            {
+                output[i] = input[i].Clone();
+            }
+
+            return output;
         }
 
         private void CancelChanges()
@@ -170,7 +188,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void DisplayEntries()
         {
-            var entries = this.hostsFile.Entries;
+            var entries = hostEntries;
 
             if (!String.IsNullOrEmpty(filter))
             {

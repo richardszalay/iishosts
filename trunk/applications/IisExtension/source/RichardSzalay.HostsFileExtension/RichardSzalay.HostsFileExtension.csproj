@@ -67,6 +67,19 @@
     <Compile Include="IAddressProvider.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="ManageHostsProtocolProvider.cs" />
+    <Compile Include="Messages\AddEntryRequest.cs" />
+    <Compile Include="Messages\AddEntryResponse.cs" />
+    <Compile Include="Messages\DeleteEntriesResponse.cs" />
+    <Compile Include="Messages\DeleteEntriesRequest.cs" />
+    <Compile Include="Messages\EditEntriesResponse.cs" />
+    <Compile Include="Messages\EditEntriesRequest.cs" />
+    <Compile Include="Messages\GetEntriesRequest.cs" />
+    <Compile Include="Messages\GetEntriesResponse.cs" />
+    <Compile Include="Messages\HostEntriesMessage.cs" />
+    <Compile Include="Messages\HostEntryMessage.cs" />
+    <Compile Include="Messages\HostsFileServiceException.cs" />
+    <Compile Include="Messages\ServiceMessage.cs" />
+    <Compile Include="Messages\VoidMessage.cs" />
     <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -75,6 +88,8 @@
     </Compile>
     <Compile Include="Registration\ManageHostsModule.cs" />
     <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
+    <Compile Include="Service\ManageHostFileModuleService.cs" />
+    <Compile Include="Service\ManageHostsFileModuleProxy.cs" />
     <Compile Include="View\EditHostEntryForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -254,5 +254,10 @@ namespace RichardSzalay.HostsFileExtension.View
         {
             return base.ShowDialog(form);
         }
+
+        T IManageHostsModulePage.CreateProxy<T>()
+        {
+            return (T)base.CreateProxy(typeof(T));
+        }
     }
 }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Web.Management.Server;
 
 namespace RichardSzalay.HostsFileExtension
 {
-    public class HostEntry : IEquatable<HostEntry>
+    public class HostEntry : IEquatable<HostEntry>, ICloneable
     {
         private const string CommentPrefix = "# ";
 
@@ -21,6 +22,17 @@ namespace RichardSzalay.HostsFileExtension
         private string hostname;
         private string address;
         private string comment;
+
+        public HostEntry(PropertyBag bag)
+        {
+            line = (int)bag[0];
+            originalLine = (string)bag[1];
+            spacer = (string)bag[2];
+            enabled = (bool)bag[3];
+            hostname = (string)bag[4];
+            address = (string)bag[5];
+            comment = (string)bag[6];
+        }
 
         public HostEntry(string hostname, string address, string comment)
             : this(-1, null, DefaultSpacer, true, hostname, address, comment)
@@ -177,5 +189,33 @@ namespace RichardSzalay.HostsFileExtension
         {
             "rhino.acme.com", "x.acme.com", "localhost"
         };
+
+        public PropertyBag ToPropertyBag()
+        {
+            PropertyBag bag = new PropertyBag();
+
+            bag[0] = line;
+            bag[1] = originalLine;
+            bag[2] = spacer;
+            bag[3] = enabled;
+            bag[4] = hostname;
+            bag[5] = address;
+            bag[6] = comment;
+
+            return bag;
+        }
+
+        public HostEntry Clone()
+        {
+            return new HostEntry(
+                line, originalLine, spacer,
+                enabled, hostname, address, comment
+                );
+        }
+
+        object ICloneable.Clone()
+        {
+            return this.Clone();
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Web.Management.Server;
 using RichardSzalay.HostsFileExtension.View;
 using System.Reflection;
+using RichardSzalay.HostsFileExtension.Service;
 
 namespace RichardSzalay.HostsFileExtension.Registration
 {
@@ -17,7 +18,7 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
         public override Type ServiceType
         {
-            get { return null; }
+            get { return typeof(ManageHostFileModuleService); }
         }
 
         public override bool SupportsScope(ManagementScope scope)
