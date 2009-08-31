@@ -21,5 +21,7 @@ namespace RichardSzalay.HostsFileExtension.View
         IServiceProvider ServiceProvider { get; }
 
         DialogResult ShowDialog(DialogForm form);
+
+        T CreateProxy<T>() where T : ModuleServiceProxy;
     }
 }
