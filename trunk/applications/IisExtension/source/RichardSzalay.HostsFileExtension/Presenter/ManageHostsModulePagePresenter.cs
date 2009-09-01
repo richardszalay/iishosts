@@ -82,13 +82,13 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 if (result == DialogResult.OK)
                 {
-                    this.proxy.AddEntry(form.HostEntry);
+                    this.proxy.AddEntries(new List<HostEntry>() { form.HostEntry });
                     this.UpdateData();
                 }
             }
         }
 
-        public void EditSelectedEntry()
+        public virtual void EditSelectedEntry()
         {
             using (var form = new EditHostEntryForm(view.ServiceProvider, new DnsAddressProvider()))
             {
@@ -107,6 +107,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                         new List<HostEntry>() { originalEntry },
                         new List<HostEntry>() { form.HostEntry }
                         );
+
+                    this.UpdateData();
                 }
             }
         }
@@ -121,6 +123,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 IList<HostEntry> entries = this.view.SelectedEntries.ToList();
 
                 this.proxy.DeleteEntries(entries);
+
+                this.UpdateData();
             }
         }
 
@@ -140,6 +144,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 }
 
                 this.proxy.EditEntries(originalEntries, changedEntries);
+
+                this.UpdateData();
             }
         }
 
@@ -155,10 +161,12 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 foreach (HostEntry entry in changedEntries)
                 {
-                    entry.Enabled = true;
+                    entry.Enabled = false;
                 }
 
                 this.proxy.EditEntries(originalEntries, changedEntries);
+
+                this.UpdateData();
             }
         }
 
@@ -168,7 +176,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             for (int i = 0; i < input.Count; i++)
             {
-                output[i] = input[i].Clone();
+                output.Add(input[i].Clone());
             }
 
             return output;

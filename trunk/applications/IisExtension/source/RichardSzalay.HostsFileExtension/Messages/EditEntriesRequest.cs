@@ -50,7 +50,7 @@ namespace RichardSzalay.HostsFileExtension.Messages
             {
                 PropertyBag entryBag = (PropertyBag)bag[1 + i];
 
-                entries[i] = new HostEntry(entryBag);
+                entries.Add(new HostEntry(entryBag));
             }
 
             return entries;

@@ -37,13 +37,13 @@ namespace RichardSzalay.HostsFileExtension.Service
             var response = new EditEntriesResponse(responseBag);
         }
 
-        public void AddEntry(HostEntry hostEntry)
+        public void AddEntries(IList<HostEntry> hostEntries)
         {
-            var request = new AddEntryRequest(hostEntry);
+            var request = new AddEntriesRequest(hostEntries);
 
             PropertyBag responseBag = (PropertyBag)base.Invoke("AddEntry", new object[] { request.ToPropertyBag() });
 
-            var response = new AddEntryResponse(responseBag);
+            var response = new AddEntriesResponse(responseBag);
         }
 
         public void DeleteEntries(IList<HostEntry> entries)

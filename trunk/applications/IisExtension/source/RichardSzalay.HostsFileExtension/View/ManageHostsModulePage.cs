@@ -34,7 +34,6 @@ namespace RichardSzalay.HostsFileExtension.View
 
         public ManageHostsModulePage()
         {
-            presenter = new ManageHostsModulePagePresenter(this);
         }
 
         private void CreateUserInterface()
@@ -79,6 +78,11 @@ namespace RichardSzalay.HostsFileExtension.View
         {
             base.OnLayout(e);
 
+            this.ReorderListViewColumns();
+        }
+
+        private void ReorderListViewColumns()
+        {
             if (ListView.Width != 0)
             {
                 float totalWidth = oldListViewWidth;
@@ -109,8 +113,7 @@ namespace RichardSzalay.HostsFileExtension.View
             {
                 return new ModuleListPageSearchField[]
                 {
-                    new ModuleListPageSearchField("Address", "Address"),
-                    new ModuleListPageSearchField("Hostname", "Hostname")
+                    new ModuleListPageSearchField(Resources.AllSearchField, Resources.AllSearchField)
                 };
             }
         }
@@ -119,8 +122,6 @@ namespace RichardSzalay.HostsFileExtension.View
         {
             presenter.FilterEntries(options.Text);
         }
-
-
 
         protected override bool CanRefresh
         {
@@ -135,6 +136,9 @@ namespace RichardSzalay.HostsFileExtension.View
         protected override void InitializeListPage()
         {
             this.CreateUserInterface();
+
+            //Connection.ConfigurationPath.PathType
+            presenter = new ManageHostsModulePagePresenter(this);
 
             this.OnInitialized(EventArgs.Empty);
         }
@@ -196,7 +200,9 @@ namespace RichardSzalay.HostsFileExtension.View
             item.SubItems.Add(entry.Hostname);
             item.SubItems.Add(entry.Comment);
             item.Tag = entry;
+            item.Font = GetFont(entry, item.Font);
             item.ForeColor = GetFontColor(entry, item.ForeColor);
+            item.UseItemStyleForSubItems = true;
 
             return item;
         }
@@ -206,6 +212,13 @@ namespace RichardSzalay.HostsFileExtension.View
             return entry.Enabled
                 ? defaultColor
                 : Color.LightGray;
+        }
+
+        private Font GetFont(HostEntry entry, Font prototype)
+        {
+            return entry.IsNew
+                ? new Font(prototype, FontStyle.Italic)
+                : prototype;
         }
 
         #endregion

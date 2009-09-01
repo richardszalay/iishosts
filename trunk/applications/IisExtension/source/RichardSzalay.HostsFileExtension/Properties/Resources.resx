@@ -126,6 +126,9 @@
   <data name="AddHostEntryTask" xml:space="preserve">
     <value>Add...</value>
   </data>
+  <data name="AllSearchField" xml:space="preserve">
+    <value>All</value>
+  </data>
   <data name="DeleteEntriesConfirmation" xml:space="preserve">
     <value>Are you sure that you want to delete the selected host entries?</value>
   </data>
