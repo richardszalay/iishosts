@@ -67,8 +67,8 @@
     <Compile Include="IAddressProvider.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="ManageHostsProtocolProvider.cs" />
-    <Compile Include="Messages\AddEntryRequest.cs" />
-    <Compile Include="Messages\AddEntryResponse.cs" />
+    <Compile Include="Messages\AddEntriesRequest.cs" />
+    <Compile Include="Messages\AddEntriesResponse.cs" />
     <Compile Include="Messages\DeleteEntriesResponse.cs" />
     <Compile Include="Messages\DeleteEntriesRequest.cs" />
     <Compile Include="Messages\EditEntriesResponse.cs" />

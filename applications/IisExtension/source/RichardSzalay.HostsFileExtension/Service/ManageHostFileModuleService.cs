@@ -9,6 +9,7 @@ namespace RichardSzalay.HostsFileExtension.Service
 {
     public class ManageHostFileModuleService : ModuleService
     {
+        [ModuleServiceMethod]
         public PropertyBag GetEntries(PropertyBag bag)
         {
             HostsFile hostsFile = GetHostsFile();
@@ -20,23 +21,29 @@ namespace RichardSzalay.HostsFileExtension.Service
             return response.ToPropertyBag();
         }
 
-        public PropertyBag AddEntry(PropertyBag bag)
+        [ModuleServiceMethod]
+        public PropertyBag AddEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>
                 {
-                    AddEntryRequest request = new AddEntryRequest(bag);
+                    AddEntriesRequest request = new AddEntriesRequest(bag);
 
-                    HostEntry hostEntry = request.Entry;
+                    IList<HostEntry> hostEntries = request.Entries;
 
                     HostsFile hostsFile = GetHostsFile();
 
-                    hostsFile.AddEntry(hostEntry);
+                    foreach (HostEntry hostEntry in hostEntries)
+                    {
+                        hostsFile.AddEntry(hostEntry);
+                    }
+
                     hostsFile.Save();
 
-                    return new AddEntryResponse().ToPropertyBag();
+                    return new AddEntriesResponse().ToPropertyBag();
                 });
         }
 
+        [ModuleServiceMethod]
         public PropertyBag EditEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>
@@ -66,6 +73,7 @@ namespace RichardSzalay.HostsFileExtension.Service
                 });
         }
 
+        [ModuleServiceMethod]
         public PropertyBag DeleteEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>

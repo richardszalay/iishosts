@@ -23,7 +23,8 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
         public override bool SupportsScope(ManagementScope scope)
         {
-            return (scope == ManagementScope.Server);
+            return (scope == ManagementScope.Server || 
+                scope == ManagementScope.Site);
         }
     }
 }

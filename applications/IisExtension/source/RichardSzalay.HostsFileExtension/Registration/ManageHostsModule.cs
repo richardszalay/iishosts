@@ -11,6 +11,10 @@ namespace RichardSzalay.HostsFileExtension.Registration
 {
     public class ManageHostsModule : Module
     {
+        public ManageHostsModule()
+        {
+        }
+
         protected override void Initialize(IServiceProvider serviceProvider, Microsoft.Web.Management.Server.ModuleInfo moduleInfo)
         {
             base.Initialize(serviceProvider, moduleInfo);
@@ -34,8 +38,8 @@ namespace RichardSzalay.HostsFileExtension.Registration
         {
             Connection service = (Connection)this.GetService(typeof(Connection));
 
-            if (!(service.IsLocalConnection || 
-                service.ConfigurationPath.PathType == ConfigurationPathType.Server))
+            if (service.ConfigurationPath.PathType != ConfigurationPathType.Server &&
+                service.ConfigurationPath.PathType != ConfigurationPathType.Site)
             {
                 return false;
             }

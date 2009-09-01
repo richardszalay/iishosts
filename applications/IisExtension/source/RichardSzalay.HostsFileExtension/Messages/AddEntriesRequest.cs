@@ -6,14 +6,14 @@ using Microsoft.Web.Management.Server;
 
 namespace RichardSzalay.HostsFileExtension.Messages
 {
-    public class AddEntryRequest : HostEntryMessage
+    public class AddEntriesRequest : HostEntriesMessage
     {
-        public AddEntryRequest(HostEntry entry)
-            : base(entry)
+        public AddEntriesRequest(IList<HostEntry> entries)
+            : base(entries)
         {
         }
 
-        public AddEntryRequest(PropertyBag bag)
+        public AddEntriesRequest(PropertyBag bag)
             : base(bag)
         {
         }

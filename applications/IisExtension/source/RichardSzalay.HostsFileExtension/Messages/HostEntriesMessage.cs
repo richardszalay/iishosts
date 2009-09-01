@@ -30,8 +30,12 @@ namespace RichardSzalay.HostsFileExtension.Messages
             {
                 PropertyBag entryBag = (PropertyBag)bag[1 + i];
 
-                entries[i] = new HostEntry(entryBag);
+                HostEntry entry = new HostEntry(entryBag);
+
+                entries.Add(entry);
             }
+
+            this.hostEntries = entries;
         }
 
         protected override PropertyBag CreateMessagePropertyBag()
