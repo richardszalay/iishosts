@@ -88,6 +88,42 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This will create host entries for all bindings on this site that are not already configured. Proceed?.
+        /// </summary>
+        internal static string AddMissingConfirmation {
+            get {
+                return ResourceManager.GetString("AddMissingConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add All Missing Hosts.
+        /// </summary>
+        internal static string AddMissingConfirmationTitle {
+            get {
+                return ResourceManager.GetString("AddMissingConfirmationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add any host entries that are not currently configured for this site.
+        /// </summary>
+        internal static string AddMissingHostEntriesDescriptin {
+            get {
+                return ResourceManager.GetString("AddMissingHostEntriesDescriptin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add All.
+        /// </summary>
+        internal static string AddMissingHostEntriesTask {
+            get {
+                return ResourceManager.GetString("AddMissingHostEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         internal static string AllSearchField {

@@ -65,6 +65,7 @@
     <Compile Include="HostEntry.cs" />
     <Compile Include="HostsFile.cs" />
     <Compile Include="IAddressProvider.cs" />
+    <Compile Include="IBindingInfoProvider.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="ManageHostsProtocolProvider.cs" />
     <Compile Include="Messages\AddEntriesRequest.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
     <Compile Include="Service\ManageHostFileModuleService.cs" />
     <Compile Include="Service\ManageHostsFileModuleProxy.cs" />
+    <Compile Include="SiteBindingInfoProvider.cs" />
     <Compile Include="View\EditHostEntryForm.cs">
       <SubType>Form</SubType>
     </Compile>

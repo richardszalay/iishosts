@@ -7,11 +7,12 @@ using Microsoft.Web.Administration;
 using System.Windows.Forms;
 using Microsoft.Web.Management.Client;
 using RichardSzalay.HostsFileExtension.Properties;
-using RichardSzalay.HostsFileExtension.Presenter;
 using System.Drawing;
 using System.Resources;
 using System.IO;
 using System.Collections;
+using RichardSzalay.HostsFileExtension.Presenter;
+using Microsoft.Web.Management.Server;
 
 namespace RichardSzalay.HostsFileExtension.View
 {
@@ -22,6 +23,8 @@ namespace RichardSzalay.HostsFileExtension.View
     {
         public event EventHandler Refreshing;
         public event EventHandler Initialized;
+        public event EventHandler ListItemDoubleClick;
+        public event EventHandler SearchFilterChanged;
 
         private ColumnHeader addressColumnHeader;
         private ColumnHeader hostnameColumnHeader;
@@ -30,10 +33,9 @@ namespace RichardSzalay.HostsFileExtension.View
 
         private TaskList taskList;
 
-        private ManageHostsModulePagePresenter presenter;
-
         public ManageHostsModulePage()
         {
+            new ManageHostsModulePagePresenter(this);
         }
 
         private void CreateUserInterface()
@@ -63,10 +65,7 @@ namespace RichardSzalay.HostsFileExtension.View
 
         void ListView_DoubleClick(object sender, EventArgs e)
         {
-            if (this.ListView.SelectedIndices.Count == 1)
-            {
-                this.presenter.EditSelectedEntry();
-            }
+            this.OnListItemDoubleClick(EventArgs.Empty);
         }
 
         void ListView_SelectedIndexChanged(object sender, EventArgs e)
@@ -79,6 +78,16 @@ namespace RichardSzalay.HostsFileExtension.View
             base.OnLayout(e);
 
             this.ReorderListViewColumns();
+        }
+
+        protected virtual void OnListItemDoubleClick(EventArgs e)
+        {
+            EventHandler handler = this.ListItemDoubleClick;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         private void ReorderListViewColumns()
@@ -96,6 +105,8 @@ namespace RichardSzalay.HostsFileExtension.View
                 oldListViewWidth = (float)ListView.Width;
             }
         }
+
+        public string SearchFilter { get; private set; }
 
         protected override bool CanSearch
         {
@@ -120,7 +131,19 @@ namespace RichardSzalay.HostsFileExtension.View
 
         protected override void  OnSearch(ModuleListPageSearchOptions options)
         {
-            presenter.FilterEntries(options.Text);
+            this.SearchFilter = options.Text;
+
+            this.OnSearchFilterChanged(EventArgs.Empty);
+        }
+
+        private void OnSearchFilterChanged(EventArgs e)
+        {
+            EventHandler handler = this.SearchFilterChanged;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         protected override bool CanRefresh
@@ -136,9 +159,6 @@ namespace RichardSzalay.HostsFileExtension.View
         protected override void InitializeListPage()
         {
             this.CreateUserInterface();
-
-            //Connection.ConfigurationPath.PathType
-            presenter = new ManageHostsModulePagePresenter(this);
 
             this.OnInitialized(EventArgs.Empty);
         }
@@ -237,10 +257,7 @@ namespace RichardSzalay.HostsFileExtension.View
 
         private bool CanApplyChanges
         {
-            get
-            {
-                return presenter.HasChanges;
-            }
+            get { return false; }
         }
 
         public IEnumerable<HostEntry> SelectedEntries
@@ -271,6 +288,25 @@ namespace RichardSzalay.HostsFileExtension.View
         T IManageHostsModulePage.CreateProxy<T>()
         {
             return (T)base.CreateProxy(typeof(T));
+        }
+
+        public ConfigurationPathType ConfigurationPathType
+        {
+            get { return Connection.ConfigurationPath.PathType; }
+        }
+
+        #region IServiceProvider Members
+
+        public new object GetService(Type serviceType)
+        {
+            return this.ServiceProvider.GetService(serviceType);
+        }
+
+        #endregion
+
+        Connection IManageHostsModulePage.Connection
+        {
+            get { return base.Connection; }
         }
     }
 }

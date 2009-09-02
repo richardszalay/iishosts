@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using RichardSzalay.HostsFileExtension.View;
 using System.Drawing;
 using Microsoft.Web.Management.Client;
@@ -11,6 +10,10 @@ using RichardSzalay.HostsFileExtension.Properties;
 using System.Collections;
 using System.Resources;
 using RichardSzalay.HostsFileExtension.Service;
+using Microsoft.Web.Management.Server;
+using Microsoft.Web.Administration;
+using Binding = Microsoft.Web.Administration.Binding;
+using System.Windows.Forms;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
@@ -21,15 +24,34 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private ManageHostsFileModuleProxy proxy;
 
+        private IAddressProvider addressProvider;
+        private IBindingInfoProvider bindingInfoProvider;
+        
+
         private string filter;
 
         public ManageHostsModulePagePresenter(IManageHostsModulePage view)
         {
             this.view = view;
-            this.view.Initialized += new EventHandler(view_HandleCreated);
+            this.view.Initialized += new EventHandler(view_Initialized);
             this.view.Refreshing += new EventHandler(view_Refreshing);
+            this.view.ListItemDoubleClick += new EventHandler(view_ListItemDoubleClick);
+            this.view.SearchFilterChanged += new EventHandler(view_SearchFilterChanged);
+        }
 
-            this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
+        void view_SearchFilterChanged(object sender, EventArgs e)
+        {
+            this.DisplayEntries();
+        }
+
+        void view_ListItemDoubleClick(object sender, EventArgs e)
+        {
+            IList<HostEntry> hostEntries = this.view.SelectedEntries.ToList();
+
+            if (hostEntries.Count == 1)
+            {
+                this.EditSelectedEntry();
+            }
         }
 
         void view_Refreshing(object sender, EventArgs e)
@@ -37,8 +59,13 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             this.UpdateData();
         }
 
-        void view_HandleCreated(object sender, EventArgs e)
+        void view_Initialized(object sender, EventArgs e)
         {
+            this.addressProvider = (IAddressProvider)view.GetService(typeof(IAddressProvider));
+            this.bindingInfoProvider = (IBindingInfoProvider)view.GetService(typeof(IBindingInfoProvider));
+
+            this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
+
             view.SetTaskList(new ManageHostsTaskList(this));
 
             this.UpdateData();
@@ -56,7 +83,78 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             this.hostEntries = this.proxy.GetEntries();
 
+            if (view.ConfigurationPathType == ConfigurationPathType.Site)
+            {
+                this.hostEntries = this.FilterSiteEntries(this.hostEntries);
+            }
+
             DisplayEntries();
+        }
+
+        private IEnumerable<HostEntry> FilterSiteEntries(IEnumerable<HostEntry> allEntries)
+        {
+            const string AnyAddress = "*";
+
+            string defaultAddress = this.addressProvider.GetAddresses()[0];
+
+            List<HostEntry> newEntries = new List<HostEntry>();
+
+            IEnumerable<Binding> bindings = this.bindingInfoProvider.GetBindings(view.Connection)
+                .Where(c => c.Protocol.StartsWith("http") || c.Protocol == "tcp");
+
+            IList<string> siteHosts = bindings.Select(c => c.Host).Distinct().ToList();
+            IList<string> invalidHosts = new List<string>(siteHosts);
+            
+            IList<string> addedHosts = new List<string>();
+
+            foreach(Binding binding in bindings)
+            {
+                string host = binding.Host;
+                string address = GetBindingAddress(binding);
+                bool isAnyAddress = (address == AnyAddress);
+
+                if (isAnyAddress)
+                {
+                    address = defaultAddress;
+                }
+
+                bool alreadyAdded = addedHosts.Contains(binding.Host);
+
+                if (!alreadyAdded)
+                {
+                    IEnumerable<HostEntry> matchingHosts = allEntries.Where(c => c.Hostname == host);
+
+                    bool hostAlreadyHasEntry = (matchingHosts.Count() > 0);
+
+                    if (hostAlreadyHasEntry)
+                    {
+                        if (!isAnyAddress)
+                        {
+                            bool existingEntryHasSameAddress =
+                                matchingHosts.Where(c => c.Address == address).Count() != 0;
+
+                            if (existingEntryHasSameAddress)
+                            {
+                                invalidHosts.Remove(host);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        newEntries.Add(new HostEntry(host, address, null));
+                        invalidHosts.Remove(host);
+                    }
+                }
+            }
+
+            return allEntries
+                .Where(c => siteHosts.Contains(c.Hostname))
+                .Union(newEntries);
+        }
+
+        private string GetBindingAddress(Binding binding)
+        {
+            return binding.BindingInformation.Split(':')[0];
         }
 
         private IEnumerable<HostEntry> SelectedEntries
@@ -71,12 +169,18 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void AddTask()
         {
-            using (var form = new EditHostEntryForm(view.ServiceProvider, new DnsAddressProvider()))
+            string defaultAddress = addressProvider.GetAddresses()[0];
+
+            using (var form = new EditHostEntryForm(view.ServiceProvider, addressProvider))
             {
                 form.Text = Resources.AddHostEntryDialogTitle;
 
+                HostEntry selectedEntry = view.SelectedEntries.FirstOrDefault();
+
                 // TODO: Fix this default value
-                form.HostEntry = new HostEntry("", "127.0.0.1", null);
+                form.HostEntry = (selectedEntry != null && selectedEntry.IsNew)
+                    ? selectedEntry
+                    : new HostEntry("", defaultAddress, null);
 
                 DialogResult result = view.ShowDialog(form);
 
@@ -88,9 +192,26 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             }
         }
 
+        private void AddMissingTask()
+        {
+            DialogResult result = MessageBox.Show(view, Resources.AddMissingConfirmation, Resources.AddMissingConfirmationTitle,
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                IList<HostEntry> entries = this.hostEntries
+                    .Where(c => c.IsNew)
+                    .ToList();
+
+                this.proxy.AddEntries(entries);
+
+                this.UpdateData();
+            }
+        }
+
         public virtual void EditSelectedEntry()
         {
-            using (var form = new EditHostEntryForm(view.ServiceProvider, new DnsAddressProvider()))
+            using (var form = new EditHostEntryForm(view.ServiceProvider, addressProvider))
             {
                 form.Text = Resources.EditHostEntryDialogTitle;
 
@@ -198,6 +319,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             var entries = hostEntries;
 
+            string filter = view.SearchFilter;
+
             if (!String.IsNullOrEmpty(filter))
             {
                 entries = entries.Where(c =>
@@ -241,23 +364,39 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 bool hasSelection = (selectedEntries.Count > 0);
                 bool multipleSelected = (selectedEntries.Count > 1);
 
+                //bool selectedItem
+
                 list.Add(CreateAddTask());
+
+                bool hasNewEntries = owner.hostEntries.Where(c => c.IsNew).Count() > 0;
+                bool showAddMissingTask = hasNewEntries;
+
+                if (showAddMissingTask)
+                {
+                    list.Add(CreateAddMissingTask());
+                }
 
                 if (selectedEntries.Count > 0)
                 {
                     HostEntry firstSelectedEntry = selectedEntries[0];
 
                     bool firstEntryEnabled = firstSelectedEntry.Enabled;
+                    bool firstEntryNew = firstSelectedEntry.IsNew;
+                    
+                    bool showEditTask = !(multipleSelected || firstEntryNew);
+                    bool showDeleteTask = !firstEntryNew;
+                    bool showDisableTask = !firstEntryNew && (multipleSelected || firstEntryEnabled);
+                    bool showEnableTask = !firstEntryNew && (multipleSelected || !showDisableTask);
 
-                    bool showDisableTask = multipleSelected || firstEntryEnabled;
-                    bool showEnableTask = multipleSelected || !showDisableTask;
-
-                    if (!multipleSelected)
+                    if (showEditTask)
                     {
                         list.Add(CreateEditTask());
                     }
 
-                    list.Add(CreateDeleteTask());
+                    if (showDeleteTask)
+                    {
+                        list.Add(CreateDeleteTask());
+                    }
 
                     if (showEnableTask)
                     {
@@ -298,6 +437,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 this.owner.AddTask();
             }
 
+            public void AddMissingTask()
+            {
+                this.owner.AddMissingTask();
+            }
+
             public void EditTask()
             {
                 this.owner.EditSelectedEntry();
@@ -330,6 +474,18 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                                  );
                 return addTask;
             }
+
+            private TaskItem CreateAddMissingTask()
+            {
+                TaskItem addTask = new MethodTaskItem(
+                                "AddMissingTask",
+                                 Resources.AddMissingHostEntriesTask,
+                                 ActionsCategory,
+                                 Resources.AddMissingHostEntriesDescriptin
+                                 );
+                return addTask;
+            }
+
 
             private TaskItem CreateEditTask()
             {

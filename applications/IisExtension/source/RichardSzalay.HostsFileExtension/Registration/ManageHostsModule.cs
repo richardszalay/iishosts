@@ -6,6 +6,7 @@ using Microsoft.Web.Management.Client;
 using RichardSzalay.HostsFileExtension.View;
 using RichardSzalay.HostsFileExtension.Properties;
 using Microsoft.Web.Management.Server;
+using System.ComponentModel.Design;
 
 namespace RichardSzalay.HostsFileExtension.Registration
 {
@@ -21,6 +22,12 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
             IControlPanel controlPanel = (IControlPanel)serviceProvider.GetService(typeof(IControlPanel));
             IExtensibilityManager extensibilityManager = (IExtensibilityManager)serviceProvider.GetService(typeof(IExtensibilityManager));
+
+            IServiceContainer serviceContainer = (IServiceContainer)serviceProvider.GetService(typeof(IServiceContainer));
+            
+            serviceContainer.AddService(typeof(IBindingInfoProvider), new SiteBindingInfoProvider());
+            serviceContainer.AddService(typeof(IAddressProvider), new DnsAddressProvider());
+            
 
             ModulePageInfo modulePageInfo = new ModulePageInfo(
                 this,
