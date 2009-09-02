@@ -126,6 +126,18 @@
   <data name="AddHostEntryTask" xml:space="preserve">
     <value>Add...</value>
   </data>
+  <data name="AddMissingConfirmation" xml:space="preserve">
+    <value>This will create host entries for all bindings on this site that are not already configured. Proceed?</value>
+  </data>
+  <data name="AddMissingConfirmationTitle" xml:space="preserve">
+    <value>Add All Missing Hosts</value>
+  </data>
+  <data name="AddMissingHostEntriesDescriptin" xml:space="preserve">
+    <value>Add any host entries that are not currently configured for this site</value>
+  </data>
+  <data name="AddMissingHostEntriesTask" xml:space="preserve">
+    <value>Add All</value>
+  </data>
   <data name="AllSearchField" xml:space="preserve">
     <value>All</value>
   </data>

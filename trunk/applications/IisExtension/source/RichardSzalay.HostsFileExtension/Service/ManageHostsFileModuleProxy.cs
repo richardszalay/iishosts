@@ -41,7 +41,7 @@ namespace RichardSzalay.HostsFileExtension.Service
         {
             var request = new AddEntriesRequest(hostEntries);
 
-            PropertyBag responseBag = (PropertyBag)base.Invoke("AddEntry", new object[] { request.ToPropertyBag() });
+            PropertyBag responseBag = (PropertyBag)base.Invoke("AddEntries", new object[] { request.ToPropertyBag() });
 
             var response = new AddEntriesResponse(responseBag);
         }
