@@ -7,6 +7,7 @@ using RichardSzalay.HostsFileExtension.View;
 using RichardSzalay.HostsFileExtension.Properties;
 using Microsoft.Web.Management.Server;
 using System.ComponentModel.Design;
+using Microsoft.Web.Management.Client.Extensions;
 
 namespace RichardSzalay.HostsFileExtension.Registration
 {
@@ -20,15 +21,31 @@ namespace RichardSzalay.HostsFileExtension.Registration
         {
             base.Initialize(serviceProvider, moduleInfo);
 
-            IControlPanel controlPanel = (IControlPanel)serviceProvider.GetService(typeof(IControlPanel));
-            IExtensibilityManager extensibilityManager = (IExtensibilityManager)serviceProvider.GetService(typeof(IExtensibilityManager));
-
             IServiceContainer serviceContainer = (IServiceContainer)serviceProvider.GetService(typeof(IServiceContainer));
-            
-            serviceContainer.AddService(typeof(IBindingInfoProvider), new SiteBindingInfoProvider());
-            serviceContainer.AddService(typeof(IAddressProvider), new DnsAddressProvider());
-            
+            this.AddCommonServices(serviceContainer);
 
+            IExtensibilityManager extensibilityManager = (IExtensibilityManager)serviceProvider.GetService(typeof(IExtensibilityManager));
+            this.RegisterProtocolProvider(serviceProvider, extensibilityManager);
+
+            IControlPanel controlPanel = (IControlPanel)serviceProvider.GetService(typeof(IControlPanel));
+            this.RegisterModulePage(controlPanel);
+        }
+
+        private void RegisterProtocolProvider(IServiceProvider provider, IExtensibilityManager extensibilityManager)
+        {
+            extensibilityManager.RegisterExtension(
+                typeof(ProtocolProvider),
+                new ManageHostsProtocolProvider(provider)
+            );
+
+            extensibilityManager.RegisterExtension(
+                typeof(IHomepageTaskListProvider),
+                new ManageHostsHomepageTaskListProvider()
+            );
+        }
+
+        private void RegisterModulePage(IControlPanel controlPanel)
+        {
             ModulePageInfo modulePageInfo = new ModulePageInfo(
                 this,
                 typeof(ManageHostsModulePage),
@@ -36,9 +53,16 @@ namespace RichardSzalay.HostsFileExtension.Registration
                 Resources.ManageHostsIconDescription,
                 null, null,
                 Resources.ManageHostsIconDescription
-                );
+            );
 
             controlPanel.RegisterPage(ControlPanelCategoryInfo.Management, modulePageInfo);
+        }
+
+        private void AddCommonServices(IServiceContainer serviceContainer)
+        {
+            serviceContainer.AddService(typeof(IBindingInfoProvider), new SiteBindingInfoProvider());
+            serviceContainer.AddService(typeof(IAddressProvider), new DnsAddressProvider());
+            serviceContainer.AddService(typeof(IBulkHostResolver), new DnsBulkHostResolver());
         }
 
         protected override bool IsPageEnabled(ModulePageInfo pageInfo)

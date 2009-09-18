@@ -88,47 +88,20 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This will create host entries for all bindings on this site that are not already configured. Proceed?.
-        /// </summary>
-        internal static string AddMissingConfirmation {
-            get {
-                return ResourceManager.GetString("AddMissingConfirmation", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add All Missing Hosts.
-        /// </summary>
-        internal static string AddMissingConfirmationTitle {
-            get {
-                return ResourceManager.GetString("AddMissingConfirmationTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add any host entries that are not currently configured for this site.
-        /// </summary>
-        internal static string AddMissingHostEntriesDescriptin {
-            get {
-                return ResourceManager.GetString("AddMissingHostEntriesDescriptin", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Add All.
-        /// </summary>
-        internal static string AddMissingHostEntriesTask {
-            get {
-                return ResourceManager.GetString("AddMissingHostEntriesTask", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to All.
         /// </summary>
         internal static string AllSearchField {
             get {
                 return ResourceManager.GetString("AllSearchField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The address for this entry conflicts with the bindings for this site..
+        /// </summary>
+        internal static string ConflictedEntryTooltip {
+            get {
+                return ResourceManager.GetString("ConflictedEntryTooltip", resourceCulture);
             }
         }
         
@@ -205,6 +178,15 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This entry is not defined in the local hosts file, but its DNS entry conflicts with the bindings for this site..
+        /// </summary>
+        internal static string DNSConflictedEntryTooltip {
+            get {
+                return ResourceManager.GetString("DNSConflictedEntryTooltip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit the selected hostname.
         /// </summary>
         internal static string EditHostEntryDescription {
@@ -264,6 +246,42 @@ namespace RichardSzalay.HostsFileExtension.Properties {
         internal static string EnableHostEntriesTask {
             get {
                 return ResourceManager.GetString("EnableHostEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will create host entries for all bindings on this site that are not already configured. Proceed?.
+        /// </summary>
+        internal static string FixEntriesConfirmation {
+            get {
+                return ResourceManager.GetString("FixEntriesConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add All Missing Hosts.
+        /// </summary>
+        internal static string FixEntriesConfirmationTitle {
+            get {
+                return ResourceManager.GetString("FixEntriesConfirmationTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some host entries for this site are missing or have a conflicting DNS resolution. Click here to fix them..
+        /// </summary>
+        internal static string FixEntriesDescription {
+            get {
+                return ResourceManager.GetString("FixEntriesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fix Host Entries.
+        /// </summary>
+        internal static string FixEntriesTask {
+            get {
+                return ResourceManager.GetString("FixEntriesTask", resourceCulture);
             }
         }
         

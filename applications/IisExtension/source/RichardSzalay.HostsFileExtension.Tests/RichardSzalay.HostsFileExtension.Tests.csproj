@@ -55,6 +55,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DnsBulkHostResolverFixture.cs" />
     <Compile Include="HostEntryFixture.cs" />
     <Compile Include="HostsFileFixture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -63,6 +64,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="SiteHostEntryViewModelStrategyFixture.cs" />
     <Compile Include="StringResource.cs" />
   </ItemGroup>
   <ItemGroup>
