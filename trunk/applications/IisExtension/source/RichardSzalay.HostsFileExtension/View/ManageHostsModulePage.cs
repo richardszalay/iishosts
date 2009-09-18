@@ -13,6 +13,7 @@ using System.IO;
 using System.Collections;
 using RichardSzalay.HostsFileExtension.Presenter;
 using Microsoft.Web.Management.Server;
+using RichardSzalay.HostsFileExtension.Model;
 
 namespace RichardSzalay.HostsFileExtension.View
 {
@@ -25,6 +26,7 @@ namespace RichardSzalay.HostsFileExtension.View
         public event EventHandler Initialized;
         public event EventHandler ListItemDoubleClick;
         public event EventHandler SearchFilterChanged;
+        public event EventHandler DeleteSelected;
 
         private ColumnHeader addressColumnHeader;
         private ColumnHeader hostnameColumnHeader;
@@ -185,7 +187,7 @@ namespace RichardSzalay.HostsFileExtension.View
             }
         }
 
-        public void SetHostEntries(IEnumerable<HostEntry> hostEntries)
+        public void SetHostEntries(IEnumerable<HostEntryViewModel> hostEntries)
         {
             int[] selectedIndicies = this.ListView.SelectedIndices.OfType<int>().ToArray();
 
@@ -213,30 +215,54 @@ namespace RichardSzalay.HostsFileExtension.View
             this.Update();
         }
 
-        private ListViewItem CreateListViewItem(HostEntry entry)
+        private ListViewItem CreateListViewItem(HostEntryViewModel model)
         {
             ListViewItem item = new ListViewItem();
-            item.Text = entry.Address;
-            item.SubItems.Add(entry.Hostname);
-            item.SubItems.Add(entry.Comment);
-            item.Tag = entry;
-            item.Font = GetFont(entry, item.Font);
-            item.ForeColor = GetFontColor(entry, item.ForeColor);
+            item.Text = model.HostEntry.Address;
+            item.SubItems.Add(model.HostEntry.Hostname);
+            item.SubItems.Add(model.HostEntry.Comment);
+            item.Tag = model;
+            item.Font = GetFont(model, item.Font);
+            item.ForeColor = GetFontColor(model, item.ForeColor);
             item.UseItemStyleForSubItems = true;
+            item.ToolTipText = GetTooltipText(model);
 
             return item;
         }
 
-        private Color GetFontColor(HostEntry entry, Color defaultColor)
+        private string GetTooltipText(HostEntryViewModel model)
         {
-            return entry.Enabled
-                ? defaultColor
-                : Color.LightGray;
+            if (model.Conflicted)
+            {
+                return (model.HostEntry.IsNew)
+                    ? Resources.DNSConflictedEntryTooltip
+                    : Resources.ConflictedEntryTooltip;
+            }
+            else
+            {
+                return String.Empty;
+            }
         }
 
-        private Font GetFont(HostEntry entry, Font prototype)
+        private Color GetFontColor(HostEntryViewModel model, Color defaultColor)
         {
-            return entry.IsNew
+            if (model.Conflicted)
+            {
+                return model.HostEntry.Enabled
+                    ? Color.Red
+                    : Color.Salmon;
+            }
+            else
+            {
+                return model.HostEntry.Enabled
+                    ? defaultColor
+                    : Color.LightGray;
+            }
+        }
+
+        private Font GetFont(HostEntryViewModel model, Font prototype)
+        {
+            return model.HostEntry.IsNew
                 ? new Font(prototype, FontStyle.Italic)
                 : prototype;
         }
@@ -260,13 +286,13 @@ namespace RichardSzalay.HostsFileExtension.View
             get { return false; }
         }
 
-        public IEnumerable<HostEntry> SelectedEntries
+        public IEnumerable<HostEntryViewModel> SelectedEntries
         {
             get
             {
                 return this.ListView.SelectedItems
                     .OfType<ListViewItem>()
-                    .Select(c => (HostEntry)c.Tag);
+                    .Select(c => (HostEntryViewModel)c.Tag);
             }
         }
 

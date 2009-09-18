@@ -14,19 +14,31 @@ using Microsoft.Web.Management.Server;
 using Microsoft.Web.Administration;
 using Binding = Microsoft.Web.Administration.Binding;
 using System.Windows.Forms;
+using RichardSzalay.HostsFileExtension.Model;
+using RichardSzalay.HostsFileExtension.Extensions;
+using System.Net;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
     public class ManageHostsModulePagePresenter
     {
         private IManageHostsModulePage view;
+
+        private IEnumerable<SiteBinding> siteBindings;
+
         private IEnumerable<HostEntry> hostEntries;
+        private IEnumerable<HostEntryViewModel> hostEntryModels;
+        
+        private bool hasAlreadyResolvedEntries = false;
+        private IEnumerable<IPHostEntry> resolvedEntries;
 
         private ManageHostsFileModuleProxy proxy;
 
         private IAddressProvider addressProvider;
         private IBindingInfoProvider bindingInfoProvider;
-        
+        private IBulkHostResolver bulkHostResolver;
+
+        private IHostEntryViewModelStrategy viewModelStrategy;
 
         private string filter;
 
@@ -37,6 +49,12 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             this.view.Refreshing += new EventHandler(view_Refreshing);
             this.view.ListItemDoubleClick += new EventHandler(view_ListItemDoubleClick);
             this.view.SearchFilterChanged += new EventHandler(view_SearchFilterChanged);
+            this.view.DeleteSelected += new EventHandler(view_DeleteSelected);
+        }
+
+        void view_DeleteSelected(object sender, EventArgs e)
+        {
+            this.DeleteSelected();
         }
 
         void view_SearchFilterChanged(object sender, EventArgs e)
@@ -46,9 +64,9 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         void view_ListItemDoubleClick(object sender, EventArgs e)
         {
-            IList<HostEntry> hostEntries = this.view.SelectedEntries.ToList();
+            int hostEntryCount = this.view.SelectedEntries.Count();
 
-            if (hostEntries.Count == 1)
+            if (hostEntryCount == 1)
             {
                 this.EditSelectedEntry();
             }
@@ -61,6 +79,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         void view_Initialized(object sender, EventArgs e)
         {
+            this.bulkHostResolver = (IBulkHostResolver)view.GetService(typeof(IBulkHostResolver));
             this.addressProvider = (IAddressProvider)view.GetService(typeof(IAddressProvider));
             this.bindingInfoProvider = (IBindingInfoProvider)view.GetService(typeof(IBindingInfoProvider));
 
@@ -68,7 +87,30 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             view.SetTaskList(new ManageHostsTaskList(this));
 
+            if (this.IsSiteView)
+            {
+                this.siteBindings = bindingInfoProvider.GetBindings(view.Connection).Select(b => new SiteBinding(b));
+
+                // TODO: Smell
+                this.viewModelStrategy = new SiteHostEntryViewModelStrategy(
+                    siteBindings,
+                    addressProvider.GetAddresses()
+                );
+            }
+            else
+            {
+                this.viewModelStrategy = new GlobalHostEntryViewModelStrategy();
+            }
+
             this.UpdateData();
+        }
+
+        private bool IsSiteView
+        {
+            get
+            {
+                return view.ConfigurationPathType == ConfigurationPathType.Site;
+            }
         }
 
         public bool HasChanges
@@ -79,85 +121,48 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             }
         }
 
+        public bool CanFindMissingEntries
+        {
+            get { return !hasAlreadyResolvedEntries; }
+        }
+
+        public bool HasConflictedEntries
+        {
+            get { return hostEntryModels.Where(c => c.Conflicted).Count() > 0; }
+        }
+
         private void UpdateData()
         {
             this.hostEntries = this.proxy.GetEntries();
 
-            if (view.ConfigurationPathType == ConfigurationPathType.Site)
+            if (IsSiteView)
             {
-                this.hostEntries = this.FilterSiteEntries(this.hostEntries);
+                this.hostEntries = hostEntries.Where(e => this.siteBindings.Contains(b => b.Host == e.Hostname));
             }
 
+            this.hostEntryModels = viewModelStrategy.GetEntryModels(hostEntries);
+
+            if (IsSiteView)
+            {
+                
+
+                this.bulkHostResolver.BeginGetHostEntries(
+                    siteBindings.Select(b => b.Host),
+                    view,
+                    TimeSpan.FromSeconds(3),
+                    c =>
+                    {
+                        resolvedEntries = bulkHostResolver.EndGetHostEntries(c);
+                        hostEntryModels = viewModelStrategy.GetEntryModels(hostEntries, resolvedEntries);
+
+                        DisplayEntries();
+                    }, null);
+            }
+            
             DisplayEntries();
         }
 
-        private IEnumerable<HostEntry> FilterSiteEntries(IEnumerable<HostEntry> allEntries)
-        {
-            const string AnyAddress = "*";
-
-            string defaultAddress = this.addressProvider.GetAddresses()[0];
-
-            List<HostEntry> newEntries = new List<HostEntry>();
-
-            IEnumerable<Binding> bindings = this.bindingInfoProvider.GetBindings(view.Connection)
-                .Where(c => c.Protocol.StartsWith("http") || c.Protocol == "tcp");
-
-            IList<string> siteHosts = bindings.Select(c => c.Host).Distinct().ToList();
-            IList<string> invalidHosts = new List<string>(siteHosts);
-            
-            IList<string> addedHosts = new List<string>();
-
-            foreach(Binding binding in bindings)
-            {
-                string host = binding.Host;
-                string address = GetBindingAddress(binding);
-                bool isAnyAddress = (address == AnyAddress);
-
-                if (isAnyAddress)
-                {
-                    address = defaultAddress;
-                }
-
-                bool alreadyAdded = addedHosts.Contains(binding.Host);
-
-                if (!alreadyAdded)
-                {
-                    IEnumerable<HostEntry> matchingHosts = allEntries.Where(c => c.Hostname == host);
-
-                    bool hostAlreadyHasEntry = (matchingHosts.Count() > 0);
-
-                    if (hostAlreadyHasEntry)
-                    {
-                        if (!isAnyAddress)
-                        {
-                            bool existingEntryHasSameAddress =
-                                matchingHosts.Where(c => c.Address == address).Count() != 0;
-
-                            if (existingEntryHasSameAddress)
-                            {
-                                invalidHosts.Remove(host);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        newEntries.Add(new HostEntry(host, address, null));
-                        invalidHosts.Remove(host);
-                    }
-                }
-            }
-
-            return allEntries
-                .Where(c => siteHosts.Contains(c.Hostname))
-                .Union(newEntries);
-        }
-
-        private string GetBindingAddress(Binding binding)
-        {
-            return binding.BindingInformation.Split(':')[0];
-        }
-
-        private IEnumerable<HostEntry> SelectedEntries
+        private IEnumerable<HostEntryViewModel> SelectedEntries
         {
             get { return view.SelectedEntries; }
         }
@@ -175,7 +180,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             {
                 form.Text = Resources.AddHostEntryDialogTitle;
 
-                HostEntry selectedEntry = view.SelectedEntries.FirstOrDefault();
+                HostEntry selectedEntry = view.SelectedEntries.Select(c => c.HostEntry).FirstOrDefault();
 
                 // TODO: Fix this default value
                 form.HostEntry = (selectedEntry != null && selectedEntry.IsNew)
@@ -192,18 +197,43 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             }
         }
 
-        private void AddMissingTask()
+        private void FixEntriesTask()
         {
-            DialogResult result = MessageBox.Show(view, Resources.AddMissingConfirmation, Resources.AddMissingConfirmationTitle,
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //DialogResult result = MessageBox.Show(view, Resources.FixEntriesConfirmation, Resources.FixEntriesConfirmationTitle,
+            //    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (result == DialogResult.Yes)
+            //if (result == DialogResult.Yes)
             {
-                IList<HostEntry> entries = this.hostEntries
-                    .Where(c => c.IsNew)
+                IEnumerable<HostEntryViewModel> newModels = this.hostEntryModels
+                    .Where(model => model.HostEntry.IsNew);
+
+                foreach (HostEntryViewModel newModel in newModels)
+                {
+                    if (newModel.Conflicted)
+                    {
+                        newModel.HostEntry.Address = newModel.PreferredAddress;
+                    }
+                }
+
+                List<HostEntry> newEntries = newModels.Select(m => m.HostEntry).ToList();
+
+                this.proxy.AddEntries(newEntries);
+
+                IEnumerable<HostEntryViewModel> conflictedModels = this.hostEntryModels
+                    .Where(model => model.Conflicted);
+
+                List<HostEntry> originalConflictedModels = conflictedModels
+                    .Select(m => m.HostEntry.Clone())
                     .ToList();
 
-                this.proxy.AddEntries(entries);
+                foreach (HostEntryViewModel conflictedModel in conflictedModels)
+                {
+                    conflictedModel.HostEntry.Address = conflictedModel.PreferredAddress;
+                }
+
+                List<HostEntry> conflictedEntries = conflictedModels.Select(m => m.HostEntry).ToList();
+
+                this.proxy.EditEntries(originalConflictedModels, conflictedEntries);
 
                 this.UpdateData();
             }
@@ -215,7 +245,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             {
                 form.Text = Resources.EditHostEntryDialogTitle;
 
-                HostEntry entry = this.view.SelectedEntries.First();
+                HostEntry entry = this.view.SelectedEntries.First().HostEntry;
                 HostEntry originalEntry = entry.Clone();
 
                 form.HostEntry = entry;
@@ -241,7 +271,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                IList<HostEntry> entries = this.view.SelectedEntries.ToList();
+                IList<HostEntry> entries = this.view.SelectedEntries.Select(e => e.HostEntry).ToList();
 
                 this.proxy.DeleteEntries(entries);
 
@@ -256,7 +286,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                IList<HostEntry> originalEntries = this.view.SelectedEntries.ToList();
+                IList<HostEntry> originalEntries = this.view.SelectedEntries.Select(e => e.HostEntry).ToList();
                 IList<HostEntry> changedEntries = CloneEntries(originalEntries);
 
                 foreach (HostEntry entry in changedEntries)
@@ -277,7 +307,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (result == DialogResult.Yes)
             {
-                IList<HostEntry> originalEntries = this.view.SelectedEntries.ToList();
+                IList<HostEntry> originalEntries = this.view.SelectedEntries.Select(c => c.HostEntry).ToList();
                 IList<HostEntry> changedEntries = CloneEntries(originalEntries);
 
                 foreach (HostEntry entry in changedEntries)
@@ -317,16 +347,16 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void DisplayEntries()
         {
-            var entries = hostEntries;
+            var entries = hostEntryModels;
 
             string filter = view.SearchFilter;
 
             if (!String.IsNullOrEmpty(filter))
             {
-                entries = entries.Where(c =>
-                    c.Address.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
-                    c.Hostname.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
-                    (c.Comment ?? "").IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1
+                entries = entries.Where(model =>
+                    model.HostEntry.Address.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
+                    model.HostEntry.Hostname.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1 ||
+                    (model.HostEntry.Comment ?? "").IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1
                     );
             }
 
@@ -359,7 +389,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     appliedChanges = false;
                 }
 
-                IList<HostEntry> selectedEntries = owner.SelectedEntries.ToList();
+                IList<HostEntry> selectedEntries = owner.SelectedEntries.Select(c => c.HostEntry).ToList();
 
                 bool hasSelection = (selectedEntries.Count > 0);
                 bool multipleSelected = (selectedEntries.Count > 1);
@@ -368,12 +398,14 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 list.Add(CreateAddTask());
 
-                bool hasNewEntries = owner.hostEntries.Where(c => c.IsNew).Count() > 0;
-                bool showAddMissingTask = hasNewEntries;
+                bool hasFixableEntries = owner.hostEntryModels
+                    .Any(c => c.Conflicted || c.HostEntry.IsNew);
 
-                if (showAddMissingTask)
+                bool showFixEntriesTask = hasFixableEntries;
+
+                if (showFixEntriesTask)
                 {
-                    list.Add(CreateAddMissingTask());
+                    list.Add(CreateFixEntriesTask());
                 }
 
                 if (selectedEntries.Count > 0)
@@ -437,9 +469,9 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 this.owner.AddTask();
             }
 
-            public void AddMissingTask()
+            public void FixEntriesTask()
             {
-                this.owner.AddMissingTask();
+                this.owner.FixEntriesTask();
             }
 
             public void EditTask()
@@ -475,13 +507,15 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                 return addTask;
             }
 
-            private TaskItem CreateAddMissingTask()
+            private TaskItem CreateFixEntriesTask()
             {
-                TaskItem addTask = new MethodTaskItem(
-                                "AddMissingTask",
-                                 Resources.AddMissingHostEntriesTask,
+                TaskItem addTask = new MessageTaskItem(
+                                MessageTaskItemType.Warning,
+                                 Resources.FixEntriesDescription,
                                  ActionsCategory,
-                                 Resources.AddMissingHostEntriesDescriptin
+                                 Resources.FixEntriesDescription,
+                                 "FixEntriesTask",
+                                 null
                                  );
                 return addTask;
             }

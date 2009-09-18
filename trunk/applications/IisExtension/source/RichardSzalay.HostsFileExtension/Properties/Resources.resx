@@ -126,20 +126,11 @@
   <data name="AddHostEntryTask" xml:space="preserve">
     <value>Add...</value>
   </data>
-  <data name="AddMissingConfirmation" xml:space="preserve">
-    <value>This will create host entries for all bindings on this site that are not already configured. Proceed?</value>
-  </data>
-  <data name="AddMissingConfirmationTitle" xml:space="preserve">
-    <value>Add All Missing Hosts</value>
-  </data>
-  <data name="AddMissingHostEntriesDescriptin" xml:space="preserve">
-    <value>Add any host entries that are not currently configured for this site</value>
-  </data>
-  <data name="AddMissingHostEntriesTask" xml:space="preserve">
-    <value>Add All</value>
-  </data>
   <data name="AllSearchField" xml:space="preserve">
     <value>All</value>
+  </data>
+  <data name="ConflictedEntryTooltip" xml:space="preserve">
+    <value>The address for this entry conflicts with the bindings for this site.</value>
   </data>
   <data name="DeleteEntriesConfirmation" xml:space="preserve">
     <value>Are you sure that you want to delete the selected host entries?</value>
@@ -165,6 +156,9 @@
   <data name="DisableHostEntriesTask" xml:space="preserve">
     <value>Disable</value>
   </data>
+  <data name="DNSConflictedEntryTooltip" xml:space="preserve">
+    <value>This entry is not defined in the local hosts file, but its DNS entry conflicts with the bindings for this site.</value>
+  </data>
   <data name="EditHostEntryDescription" xml:space="preserve">
     <value>Edit the selected hostname</value>
   </data>
@@ -185,6 +179,18 @@
   </data>
   <data name="EnableHostEntriesTask" xml:space="preserve">
     <value>Enable</value>
+  </data>
+  <data name="FixEntriesConfirmation" xml:space="preserve">
+    <value>This will create host entries for all bindings on this site that are not already configured. Proceed?</value>
+  </data>
+  <data name="FixEntriesConfirmationTitle" xml:space="preserve">
+    <value>Add All Missing Hosts</value>
+  </data>
+  <data name="FixEntriesDescription" xml:space="preserve">
+    <value>Some host entries for this site are missing or have a conflicting DNS resolution. Click here to fix them.</value>
+  </data>
+  <data name="FixEntriesTask" xml:space="preserve">
+    <value>Fix Host Entries</value>
   </data>
   <data name="HostEntryForm_AddressLabel" xml:space="preserve">
     <value>&amp;Address</value>

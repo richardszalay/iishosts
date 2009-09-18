@@ -61,11 +61,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DnsAddressProvider.cs" />
+    <Compile Include="DnsBulkHostResolver.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="FileInfoResource.cs" />
+    <Compile Include="GlobalHostEntryViewModelStrategy.cs" />
     <Compile Include="HostEntry.cs" />
     <Compile Include="HostsFile.cs" />
     <Compile Include="IAddressProvider.cs" />
     <Compile Include="IBindingInfoProvider.cs" />
+    <Compile Include="IBulkHostResolver.cs" />
+    <Compile Include="IHostEntryViewModelStrategy.cs" />
     <Compile Include="IResource.cs" />
     <Compile Include="ManageHostsProtocolProvider.cs" />
     <Compile Include="Messages\AddEntriesRequest.cs" />
@@ -81,17 +86,22 @@
     <Compile Include="Messages\HostsFileServiceException.cs" />
     <Compile Include="Messages\ServiceMessage.cs" />
     <Compile Include="Messages\VoidMessage.cs" />
+    <Compile Include="Model\HostEntryViewModel.cs" />
     <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Registration\ManageHostsHomepageTaskListProvider.cs" />
     <Compile Include="Registration\ManageHostsModule.cs" />
     <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
+    <Compile Include="Registration\ManageHostsProtocolProvider.cs" />
     <Compile Include="Service\ManageHostFileModuleService.cs" />
     <Compile Include="Service\ManageHostsFileModuleProxy.cs" />
+    <Compile Include="SiteBinding.cs" />
     <Compile Include="SiteBindingInfoProvider.cs" />
+    <Compile Include="SiteHostEntryViewModelStrategy.cs" />
     <Compile Include="View\EditHostEntryForm.cs">
       <SubType>Form</SubType>
     </Compile>
