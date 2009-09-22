@@ -199,44 +199,38 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void FixEntriesTask()
         {
-            //DialogResult result = MessageBox.Show(view, Resources.FixEntriesConfirmation, Resources.FixEntriesConfirmationTitle,
-            //    MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            //if (result == DialogResult.Yes)
-            {
-                IEnumerable<HostEntryViewModel> newModels = this.hostEntryModels
+            IEnumerable<HostEntryViewModel> newModels = this.hostEntryModels
                     .Where(model => model.HostEntry.IsNew);
 
-                foreach (HostEntryViewModel newModel in newModels)
+            foreach (HostEntryViewModel newModel in newModels)
+            {
+                if (newModel.Conflicted)
                 {
-                    if (newModel.Conflicted)
-                    {
-                        newModel.HostEntry.Address = newModel.PreferredAddress;
-                    }
+                    newModel.HostEntry.Address = newModel.PreferredAddress;
                 }
-
-                List<HostEntry> newEntries = newModels.Select(m => m.HostEntry).ToList();
-
-                this.proxy.AddEntries(newEntries);
-
-                IEnumerable<HostEntryViewModel> conflictedModels = this.hostEntryModels
-                    .Where(model => model.Conflicted);
-
-                List<HostEntry> originalConflictedModels = conflictedModels
-                    .Select(m => m.HostEntry.Clone())
-                    .ToList();
-
-                foreach (HostEntryViewModel conflictedModel in conflictedModels)
-                {
-                    conflictedModel.HostEntry.Address = conflictedModel.PreferredAddress;
-                }
-
-                List<HostEntry> conflictedEntries = conflictedModels.Select(m => m.HostEntry).ToList();
-
-                this.proxy.EditEntries(originalConflictedModels, conflictedEntries);
-
-                this.UpdateData();
             }
+
+            List<HostEntry> newEntries = newModels.Select(m => m.HostEntry).ToList();
+
+            this.proxy.AddEntries(newEntries);
+
+            IEnumerable<HostEntryViewModel> conflictedModels = this.hostEntryModels
+                .Where(model => model.Conflicted && !model.HostEntry.IsNew);
+
+            List<HostEntry> originalConflictedModels = conflictedModels
+                .Select(m => m.HostEntry.Clone())
+                .ToList();
+
+            foreach (HostEntryViewModel conflictedModel in conflictedModels)
+            {
+                conflictedModel.HostEntry.Address = conflictedModel.PreferredAddress;
+            }
+
+            List<HostEntry> conflictedEntries = conflictedModels.Select(m => m.HostEntry).ToList();
+
+            this.proxy.EditEntries(originalConflictedModels, conflictedEntries);
+
+            this.UpdateData();
         }
 
         public virtual void EditSelectedEntry()

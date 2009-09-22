@@ -40,7 +40,7 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
             extensibilityManager.RegisterExtension(
                 typeof(IHomepageTaskListProvider),
-                new ManageHostsHomepageTaskListProvider()
+                new ManageHostsHomepageTaskListProvider(this)
             );
         }
 
