@@ -6,6 +6,7 @@ using System.Net;
 using Timer = System.Timers.Timer;
 using System.ComponentModel;
 using System.Threading;
+using System.Net.Sockets;
 
 namespace RichardSzalay.HostsFileExtension
 {
@@ -39,8 +40,20 @@ namespace RichardSzalay.HostsFileExtension
             foreach (string host in hosts)
             {
                 IAsyncResult getHostEntryResult = Dns.BeginGetHostEntry(host, new AsyncCallback(c =>
-                    result.AddHostEntry((string)c.AsyncState, Dns.EndGetHostEntry(c))
-                    ), host);
+                    {
+                        IPHostEntry ipHostEntry = null;
+
+                        try
+                        {
+                            ipHostEntry = Dns.EndGetHostEntry(c);
+
+                            result.AddHostEntry((string)c.AsyncState, ipHostEntry);
+                        }
+                        catch(SocketException)
+                        {
+                        }
+
+                    }), host);
 
                 result.AddAsyncResult(getHostEntryResult);
             }

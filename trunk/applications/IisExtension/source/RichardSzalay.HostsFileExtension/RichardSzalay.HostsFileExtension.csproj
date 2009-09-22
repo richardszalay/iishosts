@@ -60,6 +60,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\IManageHostsController.cs" />
     <Compile Include="DnsAddressProvider.cs" />
     <Compile Include="DnsBulkHostResolver.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
