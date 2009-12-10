@@ -17,6 +17,8 @@ using System.Windows.Forms;
 using RichardSzalay.HostsFileExtension.Model;
 using RichardSzalay.HostsFileExtension.Extensions;
 using System.Net;
+using RichardSzalay.HostsFileExtension.Controller;
+using System.Diagnostics;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
@@ -24,21 +26,17 @@ namespace RichardSzalay.HostsFileExtension.Presenter
     {
         private IManageHostsModulePage view;
 
-        private IEnumerable<SiteBinding> siteBindings;
-
-        private IEnumerable<HostEntry> hostEntries;
         private IEnumerable<HostEntryViewModel> hostEntryModels;
         
         private bool hasAlreadyResolvedEntries = false;
-        private IEnumerable<IPHostEntry> resolvedEntries;
 
         private ManageHostsFileModuleProxy proxy;
+
+        private IManageHostsControllerFactory controllerFactory;
 
         private IAddressProvider addressProvider;
         private IBindingInfoProvider bindingInfoProvider;
         private IBulkHostResolver bulkHostResolver;
-
-        private IHostEntryViewModelStrategy viewModelStrategy;
 
         private string filter;
 
@@ -83,24 +81,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             this.addressProvider = (IAddressProvider)view.GetService(typeof(IAddressProvider));
             this.bindingInfoProvider = (IBindingInfoProvider)view.GetService(typeof(IBindingInfoProvider));
 
+            this.controllerFactory = (IManageHostsControllerFactory)view.GetService(typeof(IManageHostsControllerFactory));
+
             this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
 
             view.SetTaskList(new ManageHostsTaskList(this));
-
-            if (this.IsSiteView)
-            {
-                this.siteBindings = bindingInfoProvider.GetBindings(view.Connection).Select(b => new SiteBinding(b));
-
-                // TODO: Smell
-                this.viewModelStrategy = new SiteHostEntryViewModelStrategy(
-                    siteBindings,
-                    addressProvider.GetAddresses()
-                );
-            }
-            else
-            {
-                this.viewModelStrategy = new GlobalHostEntryViewModelStrategy();
-            }
 
             this.UpdateData();
         }
@@ -133,33 +118,34 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void UpdateData()
         {
-            this.hostEntries = this.proxy.GetEntries();
+            Trace.WriteLine("ManageHostsModulePagePresenter.UpdateData");
+
+            Connection connection = view.Connection;
+
+            IManageHostsController controller = controllerFactory.Create(connection, this.view.Module);
+
+            bool displayDefaultEntries = true;
 
             if (IsSiteView)
             {
-                this.hostEntries = hostEntries.Where(e => this.siteBindings.Contains(b => b.Host == e.Hostname));
+                controller.ResolveBindings(connection, () =>
+                {
+                    displayDefaultEntries = false;
+
+                    Trace.WriteLine("ManageHostsModulePagePresenter.UpdateData => ResolveBindings complete");
+
+                    hostEntryModels = controller.GetHostEntryModels(connection, true);
+
+                    DisplayEntries();
+                });
             }
 
-            this.hostEntryModels = viewModelStrategy.GetEntryModels(hostEntries);
-
-            if (IsSiteView)
+            if (displayDefaultEntries)
             {
-                
+                hostEntryModels = controller.GetHostEntryModels(connection, false);
 
-                this.bulkHostResolver.BeginGetHostEntries(
-                    siteBindings.Select(b => b.Host),
-                    view,
-                    TimeSpan.FromSeconds(3),
-                    c =>
-                    {
-                        resolvedEntries = bulkHostResolver.EndGetHostEntries(c);
-                        hostEntryModels = viewModelStrategy.GetEntryModels(hostEntries, resolvedEntries);
-
-                        DisplayEntries();
-                    }, null);
+                DisplayEntries();
             }
-            
-            DisplayEntries();
         }
 
         private IEnumerable<HostEntryViewModel> SelectedEntries
@@ -341,6 +327,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void DisplayEntries()
         {
+            Trace.WriteLine("ManageHostsModulePagePresenter.DisplayEntries");
+
             var entries = hostEntryModels;
 
             string filter = view.SearchFilter;
@@ -354,7 +342,10 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     );
             }
 
-            view.SetHostEntries(entries);
+            view.Invoke(new Action(() =>
+                {
+                    view.SetHostEntries(entries);
+                }), null);
         }
 
         private class ManageHostsTaskList : TaskList

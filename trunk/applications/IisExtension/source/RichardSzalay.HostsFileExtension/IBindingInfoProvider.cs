@@ -9,6 +9,6 @@ namespace RichardSzalay.HostsFileExtension
 {
     public interface IBindingInfoProvider
     {
-        IEnumerable<Binding> GetBindings(Connection connection);
+        IEnumerable<SiteBinding> GetBindings(Connection connection);
     }
 }

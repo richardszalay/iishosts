@@ -9,7 +9,7 @@ namespace RichardSzalay.HostsFileExtension
 {
     public class SiteBindingInfoProvider : IBindingInfoProvider
     {
-        public IEnumerable<Binding> GetBindings(Connection connection)
+        public IEnumerable<SiteBinding> GetBindings(Connection connection)
         {
             List<Binding> bindings = new List<Binding>();
 
@@ -23,7 +23,7 @@ namespace RichardSzalay.HostsFileExtension
                 }
             }
 
-            return bindings;
+            return bindings.Select(b => new SiteBinding(b));
         }
     }
 }

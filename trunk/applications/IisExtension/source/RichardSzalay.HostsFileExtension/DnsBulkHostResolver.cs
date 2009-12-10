@@ -29,7 +29,6 @@ namespace RichardSzalay.HostsFileExtension
 
             ResolverAsyncResult result = new ResolverAsyncResult(hosts.ToList(), threadSafeAsyncCallback, timer);
 
-            
             timer.Elapsed += (s, e) =>
                 {
                     timer.Stop();
@@ -103,7 +102,6 @@ namespace RichardSzalay.HostsFileExtension
 
                 this.timer = timer;
                 this.timer.Elapsed += (s, e) => this.MarkComplete();
-                this.timer.Start();
             }
 
             #region IAsyncResult Members
@@ -122,6 +120,11 @@ namespace RichardSzalay.HostsFileExtension
             {
                 get
                 {
+                    if (this.hosts.Count > 0)
+                    {
+                        return true;
+                    }
+
                     lock (lockObject)
                     {
                         foreach (IAsyncResult result in asyncResults)
@@ -141,6 +144,11 @@ namespace RichardSzalay.HostsFileExtension
             {
                 get
                 {
+                    if (this.hosts.Count > 0)
+                    {
+                        return true;
+                    }
+
                     lock (lockObject)
                     {
                         return (hostCount == 0);
@@ -155,6 +163,11 @@ namespace RichardSzalay.HostsFileExtension
                 lock (lockObject)
                 {
                     this.asyncResults.Add(result);
+
+                    if (result.CompletedSynchronously)
+                    {
+                        CheckComplete();
+                    }
                 }
             }
 
