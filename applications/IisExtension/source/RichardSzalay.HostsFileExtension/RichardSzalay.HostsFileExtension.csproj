@@ -60,7 +60,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controller\ManageHostsControllerFactory.cs" />
+    <Compile Include="Controller\IManageHostsControllerFactory.cs" />
     <Compile Include="Controller\IManageHostsController.cs" />
+    <Compile Include="Controller\ManageHostsController.cs" />
     <Compile Include="DnsAddressProvider.cs" />
     <Compile Include="DnsBulkHostResolver.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
@@ -103,6 +106,8 @@
     <Compile Include="SiteBinding.cs" />
     <Compile Include="SiteBindingInfoProvider.cs" />
     <Compile Include="SiteHostEntryViewModelStrategy.cs" />
+    <Compile Include="Threading\ITaskManager.cs" />
+    <Compile Include="Threading\ThreadPoolTaskManager.cs" />
     <Compile Include="View\EditHostEntryForm.cs">
       <SubType>Form</SubType>
     </Compile>

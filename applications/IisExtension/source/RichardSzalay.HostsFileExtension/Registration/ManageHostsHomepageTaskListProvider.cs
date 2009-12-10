@@ -14,6 +14,7 @@ using System.Net;
 using RichardSzalay.HostsFileExtension.Service;
 using RichardSzalay.HostsFileExtension.Properties;
 using RichardSzalay.HostsFileExtension.Model;
+using RichardSzalay.HostsFileExtension.Controller;
 
 namespace RichardSzalay.HostsFileExtension.Registration
 {
@@ -30,69 +31,122 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
         private TaskList taskList;
 
+        private string currentSiteName;
         private Connection connection;
-        private INavigationService navService;
-        private IManagementUIService uiService;
 
-        private ManageHostsFileModuleProxy hostsFileProxy;
+        private IManageHostsControllerFactory controllerFactory;
+        private IManageHostsController controller;
+        private IManagementUIService uiService;
+        private HierarchyService hierarchyService;
+        private INavigationService navigationService;
 
         private IEnumerable<HostEntryViewModel> hostEntryModels;
 
         private bool canFixEntries = false;
+        
+        private bool initialized = false;
+        private bool isDirty = true;
 
-        private bool updating = false;
+        private void Initialize(IServiceProvider serviceProvider)
+        {
+            if (!initialized)
+            {
+                connection = (Connection)serviceProvider.GetService(typeof(Connection));
+                uiService = (IManagementUIService)serviceProvider.GetService(typeof(IManagementUIService));
+
+                controllerFactory = (IManageHostsControllerFactory)serviceProvider.GetService(typeof(IManageHostsControllerFactory));
+
+                isDirty = true;
+
+                HierarchyService hs = (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
+                INavigationService navService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
+
+                hs.InfoRefreshed += (s, e) =>
+                    {
+                        isDirty = true;
+                    };
+
+                navService.NavigationPerformed += (s, e) =>
+                    {
+                        isDirty = true;
+                    };
+
+                initialized = true;
+            }
+        }
 
         public TaskList GetTaskList(IServiceProvider serviceProvider, ModulePageInfo selectedModulePage)
         {
-            connection = (Connection)serviceProvider.GetService(typeof(Connection));
-            navService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
-            uiService = (IManagementUIService)serviceProvider.GetService(typeof(IManagementUIService));
-            
-            IBindingInfoProvider bindingInfoProvider = (IBindingInfoProvider)serviceProvider.GetService(typeof(IBindingInfoProvider));
-            IBulkHostResolver bulkHostResolver = (IBulkHostResolver)serviceProvider.GetService(typeof(IBulkHostResolver));
-            IAddressProvider addressProvider = (IAddressProvider)serviceProvider.GetService(typeof(IAddressProvider));
+            this.Initialize(serviceProvider);
 
-            if (IsSiteConnection(connection) && !canFixEntries && !updating)
+            if (isDirty)
             {
-                var bindings = bindingInfoProvider.GetBindings(connection);
+                if (connection.ConfigurationPath.SiteName != currentSiteName)
+                {
+                    controller = controllerFactory.Create(connection, module);
+                }
 
-                IAsyncResult result = null;
+                hierarchyService = (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
+                navigationService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
 
-                AsyncCallback callback = new AsyncCallback(r =>
+                Trace.WriteLine("ManageHostsHomepageTaskListProvider.GetTaskList (" + connection.ConfigurationPath.SiteName + ")");
+
+                bool isSite = (connection.ConfigurationPath.PathType == ConfigurationPathType.Site);
+
+                bool cancelled = false;
+
+                HierarchyInfoEventHandler infoRefreshedHandler = null;
+                NavigationEventHandler navigationHandler = null;
+
+                Action cancelAsync = () =>
                     {
-                        IPHostEntry[] localEntries = bulkHostResolver.EndGetHostEntries(result);
+                        Trace.WriteLine("Cancelling");
 
-                        SiteHostEntryViewModelStrategy strategy = new SiteHostEntryViewModelStrategy(
-                            bindings.Select(b => new SiteBinding(b)).ToArray(),
-                            addressProvider.GetAddresses()
-                            );
+                        cancelled = true;
+                        hierarchyService.InfoUpdated -= infoRefreshedHandler;
+                        navigationService.NavigationPerformed -= navigationHandler;
+                    };
 
-                        hostsFileProxy = (ManageHostsFileModuleProxy)connection.CreateProxy(module, typeof(ManageHostsFileModuleProxy));
+                infoRefreshedHandler = (s, e) => cancelAsync();
+                navigationHandler = (s, e) => cancelAsync();
 
-                        var hostEntries = hostsFileProxy
-                            .GetEntries()
-                            .Where(e => bindings.Any(b => b.Host == e.Hostname));
+                hierarchyService.InfoUpdated += infoRefreshedHandler;
+                navigationService.NavigationPerformed += navigationHandler;
 
-                        hostEntryModels = strategy.GetEntryModels(hostEntries, localEntries);
+                if (isSite)
+                {
+                    isDirty = false;
 
-                        canFixEntries = hostEntryModels.Any(m => m.Conflicted || m.HostEntry.IsNew);
+                    controller.ResolveBindings(connection, () =>
+                        {
+                            if (isDirty || cancelled)
+                            {
+                                Trace.WriteLine("Cancelled");
 
-                        updating = false;
+                                return;
+                            }
 
-                        uiService.Update();
-                    });
+                            hierarchyService.InfoUpdated -= infoRefreshedHandler;
+                            navigationService.NavigationPerformed -= navigationHandler;
 
-                ISynchronizeInvoke syncInvoke = (ISynchronizeInvoke)navService.CurrentItem.Page;
+                            Trace.WriteLine("ManageHostsHomepageTaskListProvider.GetTaskList => ResolveBindings complete");
 
-                updating = true;
+                            hostEntryModels = controller.GetHostEntryModels(connection, true);
 
-                result = bulkHostResolver.BeginGetHostEntries(
-                    bindings.Select(b => b.Host),
-                    syncInvoke,
-                    TimeSpan.FromMilliseconds(1000),
-                    callback,
-                    null
-                    );
+                            bool newCanFixEntriesValue = hostEntryModels.Any(m => m.Conflicted || m.HostEntry.IsNew);
+
+                            if (newCanFixEntriesValue != canFixEntries)
+                            {
+                                Trace.WriteLine("ManageHostsHomepageTaskListProvider.GetTaskList => Updating UI");
+
+                                canFixEntries = newCanFixEntriesValue;
+
+                                ISynchronizeInvoke syncInvoke = (ISynchronizeInvoke)navigationService.CurrentItem.Page;
+
+                                syncInvoke.Invoke(new Action(() => uiService.Update()), null);
+                            }
+                        });
+                }
             }
 
             return taskList;
@@ -100,43 +154,11 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
         private void FixEntries()
         {
-            IEnumerable<HostEntryViewModel> newModels = this.hostEntryModels
-                    .Where(model => model.HostEntry.IsNew);
+            this.controller.FixEntries(hostEntryModels);
 
-            foreach (HostEntryViewModel newModel in newModels)
-            {
-                if (newModel.Conflicted)
-                {
-                    newModel.HostEntry.Address = newModel.PreferredAddress;
-                }
-            }
-
-            List<HostEntry> newEntries = newModels.Select(m => m.HostEntry).ToList();
-
-            this.hostsFileProxy.AddEntries(newEntries);
-
-            IEnumerable<HostEntryViewModel> conflictedModels = this.hostEntryModels
-                .Where(model => model.Conflicted && !model.HostEntry.IsNew);
-
-            List<HostEntry> originalConflictedModels = conflictedModels
-                .Select(m => m.HostEntry.Clone())
-                .ToList();
-
-            foreach (HostEntryViewModel conflictedModel in conflictedModels)
-            {
-                conflictedModel.HostEntry.Address = conflictedModel.PreferredAddress;
-            }
-
-            List<HostEntry> conflictedEntries = conflictedModels.Select(m => m.HostEntry).ToList();
-
-            this.hostsFileProxy.EditEntries(originalConflictedModels, conflictedEntries);
+            isDirty = true;
 
             uiService.Update();
-        }
-
-        private static bool IsSiteConnection(Connection connection)
-        {
-            return (connection.ConfigurationPath.PathType == ConfigurationPathType.Site);
         }
 
         private class TestTaskList : TaskList
@@ -160,9 +182,6 @@ namespace RichardSzalay.HostsFileExtension.Registration
                 if (owner.canFixEntries)
                 {
                     list.Add(CreateFixEntriesTaskItem());
-
-                    // HACK
-                    owner.canFixEntries = false;
                 }
 
                 return list;

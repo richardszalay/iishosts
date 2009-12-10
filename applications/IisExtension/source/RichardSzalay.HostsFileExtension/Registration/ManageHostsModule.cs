@@ -8,6 +8,8 @@ using RichardSzalay.HostsFileExtension.Properties;
 using Microsoft.Web.Management.Server;
 using System.ComponentModel.Design;
 using Microsoft.Web.Management.Client.Extensions;
+using RichardSzalay.HostsFileExtension.Controller;
+using RichardSzalay.HostsFileExtension.Threading;
 
 namespace RichardSzalay.HostsFileExtension.Registration
 {
@@ -63,6 +65,10 @@ namespace RichardSzalay.HostsFileExtension.Registration
             serviceContainer.AddService(typeof(IBindingInfoProvider), new SiteBindingInfoProvider());
             serviceContainer.AddService(typeof(IAddressProvider), new DnsAddressProvider());
             serviceContainer.AddService(typeof(IBulkHostResolver), new DnsBulkHostResolver());
+
+            serviceContainer.AddService(typeof(IManageHostsControllerFactory), new ManageHostsControllerFactory());
+
+            serviceContainer.AddService(typeof(ITaskManager), new ThreadPoolTaskManager());
         }
 
         protected override bool IsPageEnabled(ModulePageInfo pageInfo)

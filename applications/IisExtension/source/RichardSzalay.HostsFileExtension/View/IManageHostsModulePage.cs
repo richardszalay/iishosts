@@ -35,5 +35,7 @@ namespace RichardSzalay.HostsFileExtension.View
         ConfigurationPathType ConfigurationPathType { get; }
 
         Connection Connection { get; }
+
+        Module Module { get; }
     }
 }

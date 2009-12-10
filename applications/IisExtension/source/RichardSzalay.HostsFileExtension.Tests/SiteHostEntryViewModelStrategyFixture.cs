@@ -90,7 +90,7 @@ namespace RichardSzalay.HostsFileExtension.Tests
         }
 
         [Test]
-        public void GetEntryModels_MissingButResolved_UsesMatchingAddress()
+        public void GetEntryModels_MissingButResolved_NotIncludedInOutput()
         {
             List<SiteBinding> bindings = new List<SiteBinding>()
             {
@@ -118,16 +118,74 @@ namespace RichardSzalay.HostsFileExtension.Tests
 
             List<HostEntryViewModel> outputHostEntries = strategy.GetEntryModels(hostEntries, ipHostEntries).ToList();
 
-            Assert.AreEqual(1, outputHostEntries.Count);
-
-            Assert.IsFalse(outputHostEntries[0].Conflicted);
-            Assert.IsNotNull(outputHostEntries[0].HostEntry);
-            Assert.AreEqual("host1", outputHostEntries[0].HostEntry.Hostname);
-            Assert.AreEqual("192.168.0.1", outputHostEntries[0].HostEntry.Address);
+            Assert.AreEqual(0, outputHostEntries.Count);
         }
 
         [Test]
-        public void GetEntryModels_BindingUsesAnyAddress_UsesDefault()
+        public void GetEntryModels_BindingUsesSpecificAddress_AddressIsNotLocalAddress_NotIncludedInOutput()
+        {
+            List<SiteBinding> bindings = new List<SiteBinding>()
+            {
+                new SiteBinding() { Host = "host1", BindingInformation = "192.168.0.1" }
+            };
+
+            List<HostEntry> hostEntries = new List<HostEntry>()
+            {
+            };
+
+            List<IPHostEntry> ipHostEntries = new List<IPHostEntry>()
+            {
+                new IPHostEntry()
+                {
+                    HostName = "host1", 
+                    AddressList = new IPAddress[]
+                    {
+                        IPAddress.Parse("192.168.0.1")
+                    }
+                }
+            };
+
+            SiteHostEntryViewModelStrategy strategy = new SiteHostEntryViewModelStrategy(bindings, new string[] { DefaultAddress });
+
+            List<HostEntryViewModel> outputHostEntries = strategy.GetEntryModels(hostEntries, ipHostEntries).ToList();
+
+            Assert.AreEqual(0, outputHostEntries.Count);
+        }
+
+        [Test]
+        public void GetEntryModels_BindingUsesAnyAddress_AddressIsLocalAddress_NotIncludedInOutput()
+        {
+            List<SiteBinding> bindings = new List<SiteBinding>()
+            {
+                new SiteBinding() { Host = "host1", BindingInformation = "*" }
+            };
+
+            List<HostEntry> hostEntries = new List<HostEntry>()
+            {
+            };
+
+            List<IPHostEntry> ipHostEntries = new List<IPHostEntry>()
+            {
+                new IPHostEntry()
+                {
+                    HostName = "host1", 
+                    AddressList = new IPAddress[]
+                    {
+                        IPAddress.Parse("192.168.0.1")
+                    }
+                }
+            };
+
+            SiteHostEntryViewModelStrategy strategy = new SiteHostEntryViewModelStrategy(bindings, new string[] { "192.168.0.1" });
+
+            List<HostEntryViewModel> outputHostEntries = strategy.GetEntryModels(hostEntries, ipHostEntries).ToList();
+
+            Assert.AreEqual(0, outputHostEntries.Count);
+
+        }
+
+        [Test]
+        public void GetEntryModels_BindingUsesAnyAddress_AddressIsNotLocalAddress_MarkedAsConflicted()
         {
             List<SiteBinding> bindings = new List<SiteBinding>()
             {
@@ -156,7 +214,7 @@ namespace RichardSzalay.HostsFileExtension.Tests
 
             Assert.AreEqual(1, outputHostEntries.Count);
 
-            Assert.IsFalse(outputHostEntries[0].Conflicted);
+            Assert.IsTrue(outputHostEntries[0].Conflicted);
             Assert.IsNotNull(outputHostEntries[0].HostEntry);
             Assert.AreEqual("host1", outputHostEntries[0].HostEntry.Hostname);
             Assert.AreEqual(DefaultAddress, outputHostEntries[0].HostEntry.Address);
@@ -192,7 +250,7 @@ namespace RichardSzalay.HostsFileExtension.Tests
 
             List<HostEntryViewModel> outputHostEntries = strategy.GetEntryModels(hostEntries, ipHostEntries).ToList();
 
-            Assert.AreEqual(1, outputHostEntries.Count);
+            Assert.AreEqual(0, outputHostEntries.Count);
         }
 
         [Test]

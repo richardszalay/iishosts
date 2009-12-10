@@ -321,6 +321,11 @@ namespace RichardSzalay.HostsFileExtension.View
             get { return Connection.ConfigurationPath.PathType; }
         }
 
+        Module IManageHostsModulePage.Module
+        {
+            get { return this.Module; }
+        }
+
         #region IServiceProvider Members
 
         public new object GetService(Type serviceType)

@@ -33,14 +33,14 @@ namespace RichardSzalay.HostsFileExtension
         {
             IEnumerable<HostEntryViewModel> models = localHostEntries.Select(c => CreateEntryViewModel(c));
 
+            models = this.AddMissingEntryModels(models);
+
             bool resolvedEntriesAvailable = (resolvedIPHostEntries != null);
 
             if (resolvedEntriesAvailable)
             {
                 models = this.AddResolvedEntries(models, resolvedIPHostEntries);
             }
-
-            models = this.AddMissingEntryModels(models);
 
             return models;
         }
@@ -54,8 +54,9 @@ namespace RichardSzalay.HostsFileExtension
             foreach(IPHostEntry ipHostEntry in hostEntries)
             {
                 bool alreadyHasEntry = allEntriesMap.ContainsKey(ipHostEntry.HostName);
+                bool existingEntryIsNew = alreadyHasEntry && allEntriesMap[ipHostEntry.HostName].HostEntry.IsNew;
 
-                if (alreadyHasEntry)
+                if (alreadyHasEntry && !existingEntryIsNew)
                 {
                     continue;
                 }
@@ -82,30 +83,62 @@ namespace RichardSzalay.HostsFileExtension
                     }
                     else
                     {
+                        if (alreadyHasEntry)
+                        {
+                            outputModels.Remove(allEntriesMap[ipHostEntry.HostName]);
+                            allEntriesMap.Remove(ipHostEntry.HostName);
+                        }
+
                         continue;
                     }
                 }
 
                 string bindingAddress = matchingBinding.Address;
 
+                if (!isConflicted && IsAnyAddress(bindingAddress))
+                {
+                    bool isAddressLocal = localAddresses.Any(addr => ipHostEntry.AddressList.Any(ip => ip.ToString() == addr));
+
+                    isConflicted = isConflicted || !isAddressLocal;
+                }
+
                 string preferredAddress = IsAnyAddress(bindingAddress) ? defaultAddress : bindingAddress;
 
-                IPAddress ipAddressToUse = ipHostEntry.AddressList.FirstOrDefault(c => c.AddressFamily == AddressFamily.InterNetwork)
-                    ?? ipHostEntry.AddressList.FirstOrDefault(c => c.AddressFamily == AddressFamily.InterNetworkV6);
+                if (isConflicted)
+                {
+                    if (alreadyHasEntry)
+                    {
+                        HostEntryViewModel model = allEntriesMap[ipHostEntry.HostName];
 
-                string addressToUse = ipAddressToUse.ToString();
+                        model.PreferredAddress = preferredAddress;
+                        model.Conflicted = true;
+                    }
+                    else
+                    {
+                        IPAddress ipAddressToUse = ipHostEntry.AddressList.FirstOrDefault(c => c.AddressFamily == AddressFamily.InterNetwork)
+                            ?? ipHostEntry.AddressList.FirstOrDefault(c => c.AddressFamily == AddressFamily.InterNetworkV6);
 
-                bool isAddressLocal = localAddresses.Any(addr => ipHostEntry.AddressList.Contains(ip => ip.ToString() == addr));
+                        string addressToUse = ipAddressToUse.ToString();
 
-                isConflicted = isConflicted || !isAddressLocal;
+                        HostEntry entry = new HostEntry(matchingBinding.Host, preferredAddress, null);
 
-                HostEntry entry = new HostEntry(matchingBinding.Host, preferredAddress, null);
+                        HostEntryViewModel model = new HostEntryViewModel(entry, isConflicted, addressToUse);
 
-                HostEntryViewModel model = new HostEntryViewModel(entry, isConflicted, addressToUse);
+                        outputModels.Add(model);
 
-                outputModels.Add(model);
+                        allEntriesMap.Add(entry.Hostname, model);
+                    }
+                }
+                else
+                {
+                    if (alreadyHasEntry && existingEntryIsNew)
+                    {
+                        outputModels.Remove(allEntriesMap[ipHostEntry.HostName]);
+                        allEntriesMap.Remove(ipHostEntry.HostName);
+                    }
 
-                allEntriesMap.Add(entry.Hostname, model);
+                    // else nothing to do
+                }
             }
 
             return outputModels;
@@ -175,8 +208,6 @@ namespace RichardSzalay.HostsFileExtension
         private HostEntryViewModel CreateEntryViewModel(HostEntry entry)
         {
             IEnumerable<SiteBinding> hostMatchingBindings = siteBindings.Where(c => c.Host == entry.Hostname);
-
-
 
             bool wouldResolve = hostMatchingBindings.Any(binding =>
                 {
