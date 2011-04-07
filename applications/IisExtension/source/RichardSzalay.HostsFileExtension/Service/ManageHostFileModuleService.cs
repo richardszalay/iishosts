@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Web.Management.Server;
 using RichardSzalay.HostsFileExtension.Messages;
+using Microsoft.Web.Administration;
 
 namespace RichardSzalay.HostsFileExtension.Service
 {
@@ -125,6 +126,52 @@ namespace RichardSzalay.HostsFileExtension.Service
         private HostsFile GetHostsFile()
         {
             return new HostsFile();
+        }
+
+        //private static readonly string[] ValidProtocols = new string[] { "http", "https", "tcp" };
+
+        [ModuleServiceMethod]
+        public PropertyBag GetSiteBindings(string siteName)
+        {
+            Site site = ManagementUnit.ReadOnlyServerManager.Sites[siteName];
+
+            if (site == null)
+            {
+                return ServiceMessage.CreateError("Site not found");
+            }
+
+            var bindings = site.Bindings;
+            int bindingCount = bindings.Count;
+            List<SiteBinding> siteBindings = new List<SiteBinding>(bindingCount);
+
+            for (int i=0; i<bindingCount; i++)
+            {
+                var binding = bindings[i];
+
+                if (IsValidBinding(binding))
+                {
+                    siteBindings.Add(MapBindingToSiteBinding(binding));
+                }
+            }
+
+            return new GetSiteBindingHostnamesResponse(siteBindings.ToArray()).ToPropertyBag();
+        }
+
+        private SiteBinding MapBindingToSiteBinding(Binding binding)
+        {
+            return new SiteBinding
+            {
+                Host = binding.Host,
+                Address = binding.BindingInformation.StartsWith("*")
+                    ? "*"
+                    : binding.EndPoint.ToString()
+            };
+        }
+
+        private bool IsValidBinding(Binding binding)
+        {
+            return binding.IsIPPortHostBinding &&
+                !String.IsNullOrEmpty(binding.Host);
         }
     }
 }

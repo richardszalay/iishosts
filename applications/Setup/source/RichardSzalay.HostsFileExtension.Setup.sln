@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "RichardSzalay.HostsFileExtension.Setup", "RichardSzalay.HostsFileExtension.Setup\RichardSzalay.HostsFileExtension.Setup.wixproj", "{9FCA1847-9FC6-4D15-8EC3-C2FDC0466A5F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RichardSzalay.HostsFileExtension.Setup.Actions", "RichardSzalay.HostsFileExtension.Setup.Actions\RichardSzalay.HostsFileExtension.Setup.Actions.csproj", "{556B1CA8-2737-4147-9EE2-D339FED55615}"

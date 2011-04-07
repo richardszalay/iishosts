@@ -8,22 +8,31 @@ namespace RichardSzalay.HostsFileExtension.Messages
 {
     public abstract class ServiceMessage
     {
+        public const int ServiceVersion = 2;
+
         public ServiceMessage()
         {
         }
 
         public ServiceMessage(PropertyBag propertyBag)
         {
-            bool success = (bool)propertyBag[0];
+            int messageServiceVersion = (int)propertyBag[0];
+
+            if (messageServiceVersion != ServiceVersion)
+            {
+                throw new HostsFileServiceException("Cannot manage remote hosts as the extension version is not compatible with the version installed locally.");
+            }
+
+            bool success = (bool)propertyBag[1];
 
             if (!success)
             {
-                string errorMessage = (string)propertyBag[1];
+                string errorMessage = (string)propertyBag[2];
 
                 throw new HostsFileServiceException(errorMessage);
             }
 
-            LoadMessage((PropertyBag)propertyBag[1]);
+            LoadMessage((PropertyBag)propertyBag[2]);
         }
 
         protected abstract void LoadMessage(PropertyBag bag);
@@ -32,8 +41,9 @@ namespace RichardSzalay.HostsFileExtension.Messages
         {
             PropertyBag bag = new PropertyBag();
 
-            bag[0] = true;
-            bag[1] = CreateMessagePropertyBag();
+            bag[0] = ServiceVersion;
+            bag[1] = true;
+            bag[2] = CreateMessagePropertyBag();
 
             return bag;
         }
@@ -43,8 +53,9 @@ namespace RichardSzalay.HostsFileExtension.Messages
         public static PropertyBag CreateError(string message)
         {
             PropertyBag bag = new PropertyBag();
-            bag[0] = false;
-            bag[1] = message;
+            bag[0] = ServiceVersion;
+            bag[1] = false;
+            bag[2] = message;
 
             return bag;
         }

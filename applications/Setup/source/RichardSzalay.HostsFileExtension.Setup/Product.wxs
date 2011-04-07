@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?define ExtensionDll = "$(sys.CURRENTDIR)..\..\..\IisExtension\source\RichardSzalay.HostsFileExtension\bin\Release\RichardSzalay.HostsFileExtension.dll" ?>
+  <?define ExtensionDll = "$(sys.CURRENTDIR)..\..\..\IisExtension\source\RichardSzalay.HostsFileExtension\bin\$(var.Configuration)\RichardSzalay.HostsFileExtension.dll" ?>
   
 	<Product Id="e4dee341-5fad-463d-a73c-0783a59a6d23" Name="Hosts Management add-in for IIS 7" 
            Language="1033" Version="0.1.0.0" Manufacturer="Richard Szalay" 
@@ -18,6 +18,7 @@
             <Directory Id="HostsFileExtension" Name="HostsFileExtension">
               <Component Id="ProductComponent" Guid="9a59e727-cbd7-42f3-b605-1c319e0a72d9">
                 <File Id="RichardSzalay.HostsFileExtension.dll" 
+                      Assembly=".net"
                       Source="$(var.ExtensionDll)" KeyPath="yes" Checksum="yes" />
               </Component>
             </Directory>
@@ -35,7 +36,9 @@
           <Directory Id="HostsFileExtension" Name="HostsFileExtension">
             <Component Id="ProductComponent" Guid="9a59e727-cbd7-42f3-b605-1c319e0a72d9">
               <File Id="RichardSzalay.HostsFileExtension.dll"
-                    Source="$(var.ExtensionDll)" KeyPath="yes" Checksum="yes" />
+                    Assembly=".net"
+                    Source="$(var.ExtensionDll)" 
+                    KeyPath="yes" Checksum="yes" />
             </Component>
           </Directory>
         </Directory>
@@ -49,24 +52,25 @@
 		</Feature>
 
     <InstallExecuteSequence>
-      <Custom Action="CA_Set_WIXUI_EXITDIALOGOPTIONALTEXT" After="FindRelatedProducts">NOT Installed</Custom>
-      <Custom Action="InstallUIModuleAction" After="MsiPublishAssemblies"><![CDATA[$ProductComponent > 2]]></Custom>
+      <!--<Custom Action="CA_Set_WIXUI_EXITDIALOGOPTIONALTEXT" After="FindRelatedProducts"><![CDATA[$ProductComponent > 2]]></Custom>-->
       
+      <Custom Action="InstallUIModuleAction" After="MsiPublishAssemblies"><![CDATA[$ProductComponent > 2]]></Custom>
       <Custom Action="UninstallUIModuleAction" Before="RemoveFiles"><![CDATA[$ProductComponent = 2]]></Custom>
     </InstallExecuteSequence>
 
 
-    <Binary Id="SetupActionsCA" SourceFile="$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetDir)$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetName).CA.dll" />
-    <Binary Id="ScriptActions" SourceFile="ScriptActions.vbs" />
+    <Binary Id="SetupActionsCA" 
+            SourceFile="$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetDir)$(var.RichardSzalay.HostsFileExtension.Setup.Actions.TargetName).CA.dll" />
 
     <CustomAction Id="InstallUIModuleAction" BinaryKey="SetupActionsCA" DllEntry="InstallUIModule"
                   Execute="deferred" Impersonate="no" />
 
     <CustomAction Id="UninstallUIModuleAction" BinaryKey="SetupActionsCA" DllEntry="UninstallUIModule"
                   Execute="deferred" Impersonate="no" />
-
+<!--
     <CustomAction Id="CA_Set_WIXUI_EXITDIALOGOPTIONALTEXT" Property="WIXUI_EXITDIALOGOPTIONALTEXT" 
                   Value="Installation complete. The extension can be accessed under the Management category in the default (server) view in IIS Manager."/>
+                  -->
 
   </Product>
 </Wix>
