@@ -16,8 +16,6 @@ namespace RichardSzalay.HostsFileExtension.Setup.Actions
                 // First register the Module Provider  
                 Configuration adminConfig = mgr.GetAdministrationConfiguration();
 
-                Connection connetion;
-
                 ConfigurationSection moduleProvidersSection = adminConfig.GetSection("moduleProviders");
                 ConfigurationElementCollection moduleProviders = moduleProvidersSection.GetCollection();
                 if (FindByAttribute(moduleProviders, "name", name) == null)
@@ -27,18 +25,6 @@ namespace RichardSzalay.HostsFileExtension.Setup.Actions
                     moduleProvider.SetAttributeValue("type", type);
                     moduleProviders.Add(moduleProvider);
                 }
-
-                /*
-                // Now register it so that all Sites have access to this module 
-                ConfigurationSection modulesSection = adminConfig.GetSection("modules");
-                ConfigurationElementCollection modules = modulesSection.GetCollection();
-                if (FindByAttribute(modules, "name", name) == null)
-                {
-                    ConfigurationElement module = modules.CreateElement();
-                    module.SetAttributeValue("name", name);
-                    modules.Add(module);
-                }
-                 */
 
                 mgr.CommitChanges();
             }
@@ -68,18 +54,6 @@ namespace RichardSzalay.HostsFileExtension.Setup.Actions
             using (ServerManager mgr = new ServerManager())
             {
                 Configuration adminConfig = mgr.GetAdministrationConfiguration();
-
-                /*
-                // First remove it from the sites 
-                
-                ConfigurationSection modulesSection = adminConfig.GetSection("modules");
-                ConfigurationElementCollection modules = modulesSection.GetCollection();
-                ConfigurationElement module = FindByAttribute(modules, "name", name);
-                if (module != null)
-                {
-                    modules.Remove(module);
-                }
-                 */
 
                 // now remove the ModuleProvider 
                 ConfigurationSection moduleProvidersSection = adminConfig.GetSection("moduleProviders");

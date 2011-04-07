@@ -2,43 +2,35 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Web.Administration;
+using Microsoft.Web.Management.Server;
 
 namespace RichardSzalay.HostsFileExtension
 {
     public class SiteBinding
     {
-        public const string AnyAddress = "*";
-
-        public SiteBinding(Binding iisBinding)
-        {
-            this.Host = iisBinding.Host;
-
-            this.Protocol = iisBinding.Protocol;
-            this.BindingInformation = iisBinding.BindingInformation;
-        }
-
         public SiteBinding()
         {
         }
 
-        public string Host { get; set; }
-
-        public string Protocol { get; set; }
-
-        public string BindingInformation { get; set; }
-
-        public string Address
+        public SiteBinding(PropertyBag bag)
         {
-            get
-            {
-                return (this.BindingInformation ?? String.Empty).Split(':')[0];
-            }
+            Host = (string)bag[0];
+            Address = (string)bag[1];
         }
 
-        public bool IsAnyAddress
+        public string Host { get; set; }
+        public string Address { get; set; }
+
+        public bool IsAnyAddress { get { return Address == "*"; } }
+
+        public PropertyBag ToPropertyBag()
         {
-            get { return this.Address == AnyAddress; }
+            var bag = new PropertyBag();
+
+            bag[0] = this.Host;
+            bag[1] = this.Address;
+
+            return bag;
         }
     }
 }
