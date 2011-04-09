@@ -97,6 +97,15 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are multiple enabled host entries with the same hostname, which should be avoided. Duplicate entries can be either disabled or deleted..
+        /// </summary>
+        internal static string ConflictedEntriesDescription {
+            get {
+                return ResourceManager.GetString("ConflictedEntriesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The address for this entry conflicts with the bindings for this site..
         /// </summary>
         internal static string ConflictedEntryTooltip {
@@ -250,6 +259,15 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;multiple&gt;.
+        /// </summary>
+        internal static string FieldHasMultipleValues {
+            get {
+                return ResourceManager.GetString("FieldHasMultipleValues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This will create host entries for all bindings on this site that are not already configured. Proceed?.
         /// </summary>
         internal static string FixEntriesConfirmation {
@@ -330,6 +348,13 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap ManageHostsFeatureImage {
+            get {
+                object obj = ResourceManager.GetObject("ManageHostsFeatureImage", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Use this feature to manage host names in your local hosts file.
         /// </summary>
@@ -349,7 +374,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Open the local hosts file in an elevated notepad instance more manual editing.
+        ///   Looks up a localized string similar to Open the local hosts file in an elevated notepad instance for manual editing.
         /// </summary>
         internal static string OpenInNotepadDescription {
             get {
@@ -367,7 +392,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Switch the address of the host entry to {0}.
+        ///   Looks up a localized string similar to Switch the enabled hostname of the selected host entries to {0}, disabling other entries of the same hostname.
         /// </summary>
         internal static string SwitchAddressDescription {
             get {
@@ -381,6 +406,33 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         internal static string SwitchAddressTask {
             get {
                 return ResourceManager.GetString("SwitchAddressTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tip: You can edit common properties shared by multiple host entries by selecting them and clicking Edit.
+        /// </summary>
+        internal static string TipEditMultipleItems {
+            get {
+                return ResourceManager.GetString("TipEditMultipleItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tip: You can enable/disable local host entries for a site&apos;s bindings by selecting from the Local Hosts section from the Site&apos;s homepage.
+        /// </summary>
+        internal static string TipSiteBindingEntries {
+            get {
+                return ResourceManager.GetString("TipSiteBindingEntries", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tip: You can switch between the enabled IP address for a hostname by disabling the others and selecting from the Switch Address menu.
+        /// </summary>
+        internal static string TipSwitchAddress {
+            get {
+                return ResourceManager.GetString("TipSwitchAddress", resourceCulture);
             }
         }
     }
