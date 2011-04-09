@@ -54,7 +54,8 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                 typeof(ManageHostsModulePage),
                 Resources.ManageHostsIconTitle,
                 Resources.ManageHostsIconDescription,
-                null, null,
+                Resources.ManageHostsFeatureImage,
+                Resources.ManageHostsFeatureImage,
                 Resources.ManageHostsIconDescription
             );
 

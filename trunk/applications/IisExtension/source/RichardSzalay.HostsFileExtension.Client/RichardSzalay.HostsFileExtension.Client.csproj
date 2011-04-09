@@ -107,6 +107,8 @@
     <Compile Include="Controller\IManageHostsControllerFactory.cs" />
     <Compile Include="Controller\ManageHostsController.cs" />
     <Compile Include="Controller\ManageHostsControllerFactory.cs" />
+    <Compile Include="Model\HostEntryField.cs" />
+    <Compile Include="Model\HostEntrySelectionOptions.cs" />
     <Compile Include="Model\HostEntryViewModel.cs" />
     <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -119,9 +121,12 @@
     <Compile Include="Registration\ManageHostsModule.cs" />
     <Compile Include="Services\DnsAddressProvider.cs" />
     <Compile Include="Services\GlobalHostEntryViewModelStrategy.cs" />
+    <Compile Include="Services\HostEntrySelectionOptionsStrategy.cs" />
     <Compile Include="Services\IAddressProvider.cs" />
+    <Compile Include="Services\IHostEntrySelectionOptionsStrategy.cs" />
     <Compile Include="Services\IHostEntryViewModelStrategy.cs" />
     <Compile Include="Services\ManageHostsFileModuleProxy.cs" />
+    <Compile Include="Services\TipSelector.cs" />
     <Compile Include="View\EditHostEntryForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -145,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="RichardSzalay.HostsFileExtension.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon-32x32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
