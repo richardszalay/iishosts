@@ -61,6 +61,15 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Action failed.
+        /// </summary>
+        internal static string ActionFailedTitle {
+            get {
+                return ResourceManager.GetString("ActionFailedTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add a new host entry.
         /// </summary>
         internal static string AddHostEntryDescription {
@@ -151,6 +160,24 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Disables all active host entries for any binding of this site.
+        /// </summary>
+        internal static string DisableBindingEntriesDescription {
+            get {
+                return ResourceManager.GetString("DisableBindingEntriesDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Disable all binding entries.
+        /// </summary>
+        internal static string DisableBindingEntriesTask {
+            get {
+                return ResourceManager.GetString("DisableBindingEntriesTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure that you want to disable the selected host entries?.
         /// </summary>
         internal static string DisableEntriesConfirmation {
@@ -219,6 +246,15 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         internal static string EditHostEntryTask {
             get {
                 return ResourceManager.GetString("EditHostEntryTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Hosts.
+        /// </summary>
+        internal static string EditHostsTask {
+            get {
+                return ResourceManager.GetString("EditHostsTask", resourceCulture);
             }
         }
         
@@ -401,11 +437,47 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select New Address.
+        /// </summary>
+        internal static string SwitchAddressDialogTitle {
+            get {
+                return ResourceManager.GetString("SwitchAddressDialogTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Switch Address.
         /// </summary>
         internal static string SwitchAddressTask {
             get {
                 return ResourceManager.GetString("SwitchAddressTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switches the host entries for all bindings of this site to {0}, making as few changes to the hosts file as possible.
+        /// </summary>
+        internal static string SwitchBindingAddressDescription {
+            get {
+                return ResourceManager.GetString("SwitchBindingAddressDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switch all to....
+        /// </summary>
+        internal static string SwitchBindingsAddressesToManualTask {
+            get {
+                return ResourceManager.GetString("SwitchBindingsAddressesToManualTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Switch all to {0}.
+        /// </summary>
+        internal static string SwitchBindingsAddressTask {
+            get {
+                return ResourceManager.GetString("SwitchBindingsAddressTask", resourceCulture);
             }
         }
         

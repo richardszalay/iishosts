@@ -79,6 +79,12 @@
     <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetEntriesResponse.cs">
       <Link>Messages\GetEntriesResponse.cs</Link>
     </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetServerAddressesRequest.cs">
+      <Link>Messages\GetServerAddressesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetServerAddressesResponse.cs">
+      <Link>Messages\GetServerAddressesResponse.cs</Link>
+    </Compile>
     <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetSiteBindingHostnamesRequest.cs">
       <Link>Messages\GetSiteBindingHostnamesRequest.cs</Link>
     </Compile>
@@ -119,10 +125,8 @@
     </Compile>
     <Compile Include="Registration\ManageHostsHomepageTaskListProvider.cs" />
     <Compile Include="Registration\ManageHostsModule.cs" />
-    <Compile Include="Services\DnsAddressProvider.cs" />
     <Compile Include="Services\GlobalHostEntryViewModelStrategy.cs" />
     <Compile Include="Services\HostEntrySelectionOptionsStrategy.cs" />
-    <Compile Include="Services\IAddressProvider.cs" />
     <Compile Include="Services\IHostEntrySelectionOptionsStrategy.cs" />
     <Compile Include="Services\IHostEntryViewModelStrategy.cs" />
     <Compile Include="Services\ManageHostsFileModuleProxy.cs" />
@@ -137,6 +141,12 @@
     <Compile Include="View\ManageHostsModulePage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="View\SelectSwitchAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\SelectSwitchAddress.Designer.cs">
+      <DependentUpon>SelectSwitchAddress.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -146,6 +156,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="View\EditHostEntryForm.resx">
       <DependentUpon>EditHostEntryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\SelectSwitchAddress.resx">
+      <DependentUpon>SelectSwitchAddress.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -64,8 +64,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
         private void AddCommonServices(IServiceContainer serviceContainer)
         {
-            serviceContainer.AddService(typeof(IAddressProvider), new DnsAddressProvider());
-
             serviceContainer.AddService(typeof(IManageHostsControllerFactory), new ManageHostsControllerFactory());
         }
 

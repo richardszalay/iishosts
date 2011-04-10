@@ -15,5 +15,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Model
 
         public bool CanEnable { get; set; }
         public bool CanDisable { get; set; }
+
+        public bool CanDelete { get; set; }
     }
 }

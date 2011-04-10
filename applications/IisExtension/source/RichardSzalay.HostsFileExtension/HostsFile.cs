@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Net;
 
 namespace RichardSzalay.HostsFileExtension
 {
@@ -16,7 +17,7 @@ namespace RichardSzalay.HostsFileExtension
 
         private List<int> deletedLines;
 
-        private const string AddressExpression = @"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}";
+        private const string AddressExpression = @"[\da-fA-F\.\:]+";
         private const string EntryExpression = @"^(?'Disabled'\#)?\s*" +
             @"(?'Address'" + AddressExpression + @")" +
             @"(?'Spacer'\s+)" +
@@ -193,6 +194,12 @@ namespace RichardSzalay.HostsFileExtension
             string address = match.Groups["Address"].Value;
             string spacer = match.Groups["Spacer"].Value;
             string hostname = match.Groups["Hostname"].Value;
+
+            IPAddress tempAddress;
+            if (!IPAddress.TryParse(address, out tempAddress))
+            {
+                return null;
+            }
             
             Group commentGroup = match.Groups["Comment"];
             

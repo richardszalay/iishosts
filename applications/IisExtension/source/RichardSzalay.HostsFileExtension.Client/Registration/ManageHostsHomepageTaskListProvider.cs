@@ -15,6 +15,9 @@ using RichardSzalay.HostsFileExtension.Service;
 using RichardSzalay.HostsFileExtension.Client.Controller;
 using RichardSzalay.HostsFileExtension.Client.View;
 using RichardSzalay.HostsFileExtension.Client.Model;
+using RichardSzalay.HostsFileExtension.Client.Services;
+using RichardSzalay.HostsFileExtension.Client.Properties;
+using System.Windows.Forms;
 
 namespace RichardSzalay.HostsFileExtension.Client.Registration
 {
@@ -46,8 +49,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         private HierarchyService hierarchyService;
         private INavigationService navigationService;
 
-        private IEnumerable<HostEntryViewModel> hostEntryModels;
-
         private bool initialized = false;
         private bool isDirty = true;
         private IEnumerable<HostEntryViewModel> hostEntries;
@@ -60,8 +61,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
                 connection = (Connection)serviceProvider.GetService(typeof(Connection));
                 uiService = (IManagementUIService)serviceProvider.GetService(typeof(IManagementUIService));
-
-                addresses = ((IAddressProvider)serviceProvider.GetService(typeof(IAddressProvider))).GetAddresses();
 
                 controllerFactory = (IManageHostsControllerFactory)serviceProvider.GetService(typeof(IManageHostsControllerFactory));
 
@@ -95,6 +94,11 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                     controller = controllerFactory.Create(connection, module);
                 }
 
+                var proxy = (ManageHostsFileModuleProxy)connection
+                    .CreateProxy(this.module, typeof(ManageHostsFileModuleProxy));
+
+                this.addresses = proxy.GetServerAddresses();
+
                 hierarchyService = (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
                 navigationService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
 
@@ -106,17 +110,33 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                 {
                     isDirty = false;
 
-                    this.hostEntries = controller.GetHostEntryModels(connection);
-                    this.bindings = controller.GetSiteBindings(connection).ToArray();
+                    this.RefreshHostEntries();
+
+                    this.alternateAddresses = new HostEntrySelectionOptionsStrategy(hostEntries)
+                        .GetOptions(hostEntries).AlternateAddresses;
+
+                    this.hasEnabledBindingEntries = hostEntries.Any(x => x.HostEntry.Enabled);
                 }
             }
 
             return taskList;
         }
 
+        private void RefreshHostEntries()
+        {
+            var allEntries = controller.GetHostEntryModels(connection);
+            this.bindings = controller.GetSiteBindings(connection).ToArray();
+
+            this.hostEntries = allEntries
+                .Where(x => bindings.Any(b => b.Host == x.HostEntry.Hostname))
+                .ToList();
+        }
+
         private SiteBinding[] bindings;
         private string[] addresses;
         private IServiceProvider serviceProvider;
+        private ICollection<string> alternateAddresses;
+        private bool hasEnabledBindingEntries;
 
 
         private class TestTaskList : TaskList
@@ -129,14 +149,19 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                 this.Expanded = true;
             }
 
-            public void AddToHostsFile(string hostname)
+            public void SwitchBindingsAddress(string address)
             {
-                this.owner.AddToHostsFile(hostname);
+                this.owner.SwitchBindingsAddress(address);
             }
 
-            public void RemoveFromHostsFile(string hostname)
+            public void SwitchBindingsAddressToManual()
             {
-                this.owner.RemoveFromHostsFile(hostname);
+                this.owner.SwitchBindingsAddressToManual();
+            }
+
+            public void DisableAllBindingEntries()
+            {
+                this.owner.DisableAllBindingEntries();
             }
 
             public void GoToHostsView()
@@ -160,24 +185,30 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
             {
                 GroupTaskItem taskItem = new GroupTaskItem("Expanded", "Hosts File", "", true);
 
-                foreach (var binding in owner.bindings)
+                if (owner.alternateAddresses != null)
                 {
-                    var isAlreadyInHostFile = owner.hostEntries.Any(x => x.HostEntry.Enabled &&
-                        String.Equals(x.HostEntry.Hostname, binding.Host, StringComparison.InvariantCultureIgnoreCase));
-
-                    if (isAlreadyInHostFile)
+                    foreach (var alternateAddress in owner.alternateAddresses)
                     {
-                        taskItem.Items.Add(new MethodTaskItem("RemoveFromHostsFile", "Remove " + binding.Host,
-                            "Tasks", "", null, binding.Host)); 
-                    }
-                    else
-                    {
-                        taskItem.Items.Add(new MethodTaskItem("AddToHostsFile", "Add " + binding.Host,
-                            "Tasks", "", null, binding.Host));
+                        taskItem.Items.Add(new MethodTaskItem("SwitchBindingsAddress",
+                            String.Format(Resources.SwitchBindingsAddressTask, alternateAddress),
+                            "Tasks",
+                            String.Format(Resources.SwitchBindingAddressDescription, alternateAddress),
+                            null, alternateAddress));
                     }
                 }
 
-                taskItem.Items.Add(new MethodTaskItem("GoToHostsView", "Edit Hosts", "Tasks"));
+                taskItem.Items.Add(new MethodTaskItem("SwitchBindingsAddressToManual",
+                        Resources.SwitchBindingsAddressesToManualTask,
+                        "Tasks"));
+                
+                if (owner.hasEnabledBindingEntries)
+                {
+                    taskItem.Items.Add(new MethodTaskItem("DisableAllBindingEntries",
+                        Resources.DisableBindingEntriesTask,
+                        "Tasks", Resources.DisableBindingEntriesDescription));
+                }
+
+                taskItem.Items.Add(new MethodTaskItem("GoToHostsView", Resources.EditHostsTask, "Tasks"));
 
                 return taskItem;
             }
@@ -185,63 +216,103 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
             public bool Expanded { get; set; }
         }
 
-        private void AddToHostsFile(string hostname)
+        private void SwitchBindingsAddress(string address)
         {
-            var existingEntry = this.hostEntries
-                .FirstOrDefault(x => x.HostEntry.Hostname == hostname);
-
-            var binding = this.bindings.FirstOrDefault(x => x.Host == hostname);
-
-            string address = addresses[0];
-
-            if (binding != null && !binding.IsAnyAddress)
-            {
-                address = binding.Address;
-            }
-
             var proxy = (ManageHostsFileModuleProxy)connection
                 .CreateProxy(this.module, typeof(ManageHostsFileModuleProxy));
 
-            if (existingEntry != null)
+            var hosts = bindings.Select(x => x.Host).Distinct().ToList();
+
+            var entriesToAdd = hosts
+                .Where(h => !hostEntries.Any(entry => entry.HostEntry.Hostname == h && 
+                                            entry.HostEntry.Address == address))
+                .Select(host =>
+                    {
+                        return new HostEntry(host, address, null);
+                    })
+                .ToList();
+
+            if (entriesToAdd.Count > 0)
             {
-                if (!existingEntry.HostEntry.Enabled)
+                proxy.AddEntries(entriesToAdd);
+            }
+
+            var entriesToEnableBefore = hosts
+                .Select(host => hostEntries.FirstOrDefault(m => m.HostEntry.Hostname == host && m.HostEntry.Address == address))
+                .Where(m => m != null)
+                .Select(m => m.HostEntry)
+                .ToList();
+
+            var entriesToEnableAfter = entriesToEnableBefore
+                .Select(e =>
                 {
-                    var newEntry = existingEntry.HostEntry.Clone();
+                    var newEntry = e.Clone();
                     newEntry.Enabled = true;
-                    newEntry.Address = address;
+                    return newEntry;
+                }).ToList();
 
-                    proxy.EditEntries(
-                        new [] { existingEntry.HostEntry }, 
-                        new [] { newEntry });
-                }
-            }
-            else
-            {
-                var newEntry = new HostEntry(hostname, addresses.First(), null);
+            var entriesToDisableBefore = hostEntries
+                .Where(m => hosts.Any(h => h == m.HostEntry.Hostname) &&
+                            !entriesToEnableBefore.Contains(m.HostEntry))
+                .Select(m => m.HostEntry)
+                .ToList();
 
-                proxy.AddEntries(new[] { newEntry });
-            }
+            var entriesToDisableAfter = entriesToDisableBefore
+                .Select(e =>
+                {
+                    var newEntry = e.Clone();
+                    newEntry.Enabled = false;
+                    return newEntry;
+                }).ToList();
+
+            proxy.EditEntries(
+                entriesToDisableBefore.Concat(entriesToEnableBefore).ToList(),
+                entriesToDisableAfter.Concat(entriesToEnableAfter).ToList()
+            );
 
             isDirty = true;
 
             uiService.Update();
         }
 
-        private void RemoveFromHostsFile(string hostname)
+        private void SwitchBindingsAddressToManual()
+        {
+            using (var form = new SelectSwitchAddress(serviceProvider, addresses))
+            {
+                var result = uiService.ShowDialog(form);
+
+                if (result == DialogResult.OK)
+                {
+                    SwitchBindingsAddress(form.Address);
+                }
+            }
+        }
+
+        private void DisableAllBindingEntries()
         {
             isDirty = true;
 
-            var existingEntry = this.hostEntries
-                .FirstOrDefault(x => x.HostEntry.Hostname == hostname && x.HostEntry.Enabled);
+            var enabledEntries = this.hostEntries
+                .Select(m => m.HostEntry)
+                .Where(x => x.Enabled && bindings.Any(b => b.Host == x.Hostname))
+                .ToList();
 
             var proxy = (ManageHostsFileModuleProxy)connection
                 .CreateProxy(this.module, typeof(ManageHostsFileModuleProxy));
 
-            if (existingEntry != null)
+            if (enabledEntries.Count > 0)
             {
-                var newEntry = existingEntry.HostEntry.Clone();
-                newEntry.Enabled = false;
-                proxy.EditEntries(new [] { existingEntry.HostEntry }, new [] { newEntry });
+                var disabledEntries = enabledEntries
+                    .Select(entry =>
+                        {
+                            var newEntry = entry.Clone();
+                            newEntry.Enabled = false;
+
+                            return newEntry;
+                        })
+                    .ToList();
+
+                proxy.EditEntries(enabledEntries, disabledEntries);
             }
 
             uiService.Update();

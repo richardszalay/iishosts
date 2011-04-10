@@ -10,6 +10,18 @@ namespace RichardSzalay.HostsFileExtension.Service
 {
     public class ManageHostFileModuleService : ModuleService
     {
+        private readonly IAddressProvider addressProvider;
+
+        public ManageHostFileModuleService()
+            : this(new DnsAddressProvider())
+        {
+        }
+
+        public ManageHostFileModuleService(IAddressProvider addressProvider)
+        {
+            this.addressProvider = addressProvider;
+        }
+
         [ModuleServiceMethod]
         public PropertyBag GetEntries(PropertyBag bag)
         {
@@ -100,6 +112,13 @@ namespace RichardSzalay.HostsFileExtension.Service
 
         private HostEntry FindHostEntry(HostEntry entryToFind, IEnumerable<HostEntry> entries)
         {
+            var entry = entries.FirstOrDefault(e => entryToFind.Line == e.Line);
+
+            if (entry == null || entryToFind.ToString() != entry.ToString())
+            {
+                throw new HostsFileEditCollisionException();
+            }
+
             foreach (HostEntry hostEntry in entries)
             {
                 if (entryToFind.ToString() == hostEntry.ToString())
@@ -133,28 +152,39 @@ namespace RichardSzalay.HostsFileExtension.Service
         [ModuleServiceMethod]
         public PropertyBag GetSiteBindings(string siteName)
         {
-            Site site = ManagementUnit.ReadOnlyServerManager.Sites[siteName];
-
-            if (site == null)
-            {
-                return ServiceMessage.CreateError("Site not found");
-            }
-
-            var bindings = site.Bindings;
-            int bindingCount = bindings.Count;
-            List<SiteBinding> siteBindings = new List<SiteBinding>(bindingCount);
-
-            for (int i=0; i<bindingCount; i++)
-            {
-                var binding = bindings[i];
-
-                if (IsValidBinding(binding))
+            return CatchCommonExceptions(() =>
                 {
-                    siteBindings.Add(MapBindingToSiteBinding(binding));
-                }
-            }
+                    Site site = ManagementUnit.ReadOnlyServerManager.Sites[siteName];
 
-            return new GetSiteBindingHostnamesResponse(siteBindings.ToArray()).ToPropertyBag();
+                    if (site == null)
+                    {
+                        return ServiceMessage.CreateError("Site not found");
+                    }
+
+                    var bindings = site.Bindings;
+                    int bindingCount = bindings.Count;
+                    List<SiteBinding> siteBindings = new List<SiteBinding>(bindingCount);
+
+                    for (int i = 0; i < bindingCount; i++)
+                    {
+                        var binding = bindings[i];
+
+                        if (IsValidBinding(binding))
+                        {
+                            siteBindings.Add(MapBindingToSiteBinding(binding));
+                        }
+                    }
+
+                    return new GetSiteBindingHostnamesResponse(siteBindings.ToArray()).ToPropertyBag();
+                });
+        }
+
+        [ModuleServiceMethod]
+        public PropertyBag GetServerAddresses()
+        {
+            string[] addresses = addressProvider.GetAddresses();
+
+            return new GetServerAddressesResponse(addresses).ToPropertyBag();
         }
 
         private SiteBinding MapBindingToSiteBinding(Binding binding)

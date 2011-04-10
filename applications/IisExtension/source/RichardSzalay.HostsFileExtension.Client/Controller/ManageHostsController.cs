@@ -23,7 +23,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Controller
 
         private INavigationService navService;
         private Connection connection;
-        private IAddressProvider addressProvider;
 
         private ManageHostsFileModuleProxy hostsFileProxy;
         
@@ -38,7 +37,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Controller
             this.navService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
 
             this.connection = (Connection)serviceProvider.GetService(typeof(Connection));
-            this.addressProvider = (IAddressProvider)serviceProvider.GetService(typeof(IAddressProvider));
 
             this.isSite = (connection.ConfigurationPath.PathType == ConfigurationPathType.Site);
             this.hostsFileProxy = (ManageHostsFileModuleProxy)connection.CreateProxy(module, typeof(ManageHostsFileModuleProxy));

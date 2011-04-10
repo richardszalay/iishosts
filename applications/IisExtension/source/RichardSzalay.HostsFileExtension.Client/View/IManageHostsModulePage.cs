@@ -19,6 +19,7 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         event EventHandler SearchFilterChanged;
         event EventHandler DeleteSelected;
         event EventHandler SelectionChanged;
+        event EventHandler EditSelected;
 
         string SearchFilter { get; }
 

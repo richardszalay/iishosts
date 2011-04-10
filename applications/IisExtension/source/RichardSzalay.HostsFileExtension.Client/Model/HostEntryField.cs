@@ -12,6 +12,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Model
         Hostname = 1,
         Address = 2,
         Enabled = 4,
-        Comment = 8
+        Comment = 8,
+        All = Hostname | Address | Enabled | Comment
     }
 }

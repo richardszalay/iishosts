@@ -65,5 +65,16 @@ namespace RichardSzalay.HostsFileExtension.Service
 
             return response.Bindings;
         }
+
+        public string[] GetServerAddresses()
+        {
+            var request = new GetServerAddressesRequest();
+
+            PropertyBag responseBag = (PropertyBag)base.Invoke("GetServerAddresses");
+
+            var response = new GetServerAddressesResponse(responseBag);
+
+            return response.Addresses;
+        }
     }
 }
