@@ -244,4 +244,28 @@
   <data name="TipSwitchAddress" xml:space="preserve">
     <value>Tip: You can switch between the enabled IP address for a hostname by disabling the others and selecting from the Switch Address menu</value>
   </data>
+  <data name="DisableBindingEntriesDescription" xml:space="preserve">
+    <value>Disables all active host entries for any binding of this site</value>
+  </data>
+  <data name="DisableBindingEntriesTask" xml:space="preserve">
+    <value>Disable all binding entries</value>
+  </data>
+  <data name="EditHostsTask" xml:space="preserve">
+    <value>Edit Hosts</value>
+  </data>
+  <data name="SwitchBindingAddressDescription" xml:space="preserve">
+    <value>Switches the host entries for all bindings of this site to {0}, making as few changes to the hosts file as possible</value>
+  </data>
+  <data name="SwitchBindingsAddressTask" xml:space="preserve">
+    <value>Switch all to {0}</value>
+  </data>
+  <data name="SwitchBindingsAddressesToManualTask" xml:space="preserve">
+    <value>Switch all to...</value>
+  </data>
+  <data name="SwitchAddressDialogTitle" xml:space="preserve">
+    <value>Select New Address</value>
+  </data>
+  <data name="ActionFailedTitle" xml:space="preserve">
+    <value>Action failed</value>
+  </data>
 </root>

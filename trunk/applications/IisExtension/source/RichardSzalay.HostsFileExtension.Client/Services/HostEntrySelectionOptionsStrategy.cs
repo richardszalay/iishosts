@@ -34,7 +34,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Services
                 {
                     alternateAddresses = (alternateAddresses == null)
                         ? GetAlternateAddresses(model.HostEntry)
-                        : alternateAddresses.Intersect(GetAlternateAddresses(model.HostEntry));
+                        : alternateAddresses.Union(GetAlternateAddresses(model.HostEntry));
                 }
 
                 if (model.HostEntry.Enabled)
@@ -45,13 +45,13 @@ namespace RichardSzalay.HostsFileExtension.Client.Services
                 {
                     options.CanEnable = true;
                 }
+
+                options.CanEdit = true;
+                options.CanDelete = true;
+                options.CanSwitchAddress = true;
             }
 
-            if (alternateAddresses != null)
-            {
-                options.AlternateAddresses = alternateAddresses.ToList();
-                options.CanSwitchAddress = (options.AlternateAddresses.Count > 0);
-            }
+            options.AlternateAddresses = (alternateAddresses ?? new string[0]).ToList();
 
             if (uniqueAddresses.Count == 1)
             {
@@ -72,8 +72,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Services
             {
                 options.EditableFields |= HostEntryField.Enabled;
             }
-
-            options.CanEdit = (options.EditableFields != HostEntryField.None);
 
             return options;
         }

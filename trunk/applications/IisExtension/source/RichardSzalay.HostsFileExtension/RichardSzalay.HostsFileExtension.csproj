@@ -121,12 +121,14 @@
     <Compile Include="IResource.cs" />
     <Compile Include="Messages\AddEntriesRequest.cs" />
     <Compile Include="Messages\AddEntriesResponse.cs" />
+    <Compile Include="Messages\GetServerAddressesRequest.cs" />
     <Compile Include="Messages\DeleteEntriesResponse.cs" />
     <Compile Include="Messages\DeleteEntriesRequest.cs" />
     <Compile Include="Messages\EditEntriesResponse.cs" />
     <Compile Include="Messages\EditEntriesRequest.cs" />
     <Compile Include="Messages\GetEntriesRequest.cs" />
     <Compile Include="Messages\GetEntriesResponse.cs" />
+    <Compile Include="Messages\GetServerAddressesResponse.cs" />
     <Compile Include="Messages\GetSiteBindingHostnamesRequest.cs" />
     <Compile Include="Messages\GetSiteBindingHostnamesResponse.cs" />
     <Compile Include="Messages\HostEntriesMessage.cs" />
@@ -134,7 +136,15 @@
     <Compile Include="Messages\HostsFileServiceException.cs" />
     <Compile Include="Messages\ServiceMessage.cs" />
     <Compile Include="Messages\VoidMessage.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Registration\ManageHostsModuleUIProvider.cs" />
+    <Compile Include="Service\DnsAddressProvider.cs" />
+    <Compile Include="Service\HostsFileEditCollisionException.cs" />
+    <Compile Include="Service\IAddressProvider.cs" />
     <Compile Include="Service\ManageHostFileModuleService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SiteBinding.cs" />
@@ -158,6 +168,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

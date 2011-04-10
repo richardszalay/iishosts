@@ -28,7 +28,7 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         {
         }
 
-        public EditHostEntryForm(IServiceProvider serviceProvider, IAddressProvider addressProvider)
+        public EditHostEntryForm(IServiceProvider serviceProvider, string[] addresses)
             : base(serviceProvider)
         {
             InitializeComponent();
@@ -38,9 +38,9 @@ namespace RichardSzalay.HostsFileExtension.Client.View
             commentLabel.Text = Resources.HostEntryForm_CommentLabel;
             enabledCheckBox.Text = Resources.HostEntryForm_EnabledLabel;
 
-            if (addressProvider != null)
+            if (addresses != null)
             {
-                addressValues = addressProvider.GetAddresses();
+                addressValues = addresses;
                 addressComboBox.Items.Clear();
                 addressComboBox.Items.AddRange(addressValues);
             }
@@ -61,22 +61,22 @@ namespace RichardSzalay.HostsFileExtension.Client.View
 
         private void BindFromForm()
         {
-            if (addressComboBox.Enabled)
+            if (AddressChanged)
             {
                 hostEntry.Address = addressComboBox.Text;
             }
 
-            if (hostnameTextBox.Enabled)
+            if (HostnameChanged)
             {
                 hostEntry.Hostname = hostnameTextBox.Text;
             }
 
-            if (commentTextBox.Enabled)
+            if (CommentChanged)
             {
                 hostEntry.Comment = commentTextBox.Text;
             }
 
-            if (enabledCheckBox.Checked)
+            if (EnabledChanged)
             {
                 hostEntry.Enabled = enabledCheckBox.Checked;
             }
@@ -84,10 +84,32 @@ namespace RichardSzalay.HostsFileExtension.Client.View
 
         private void BindToForm()
         {
-            addressComboBox.Text = hostEntry.Address;
-            hostnameTextBox.Text = hostEntry.Hostname;
-            commentTextBox.Text = hostEntry.Comment;
-            enabledCheckBox.Checked = hostEntry.Enabled;
+            AddressChanged = false;
+            HostnameChanged = false;
+            CommentChanged = false;
+            EnabledChanged = false;
+
+            addressComboBox.Text = ((editableFields & HostEntryField.Address) != 0)
+                ? hostEntry.Address
+                : Resources.FieldHasMultipleValues;
+
+            hostnameTextBox.Text = ((editableFields & HostEntryField.Hostname) != 0)
+                ? hostEntry.Hostname
+                : Resources.FieldHasMultipleValues;
+
+            commentTextBox.Text = ((editableFields & HostEntryField.Comment) != 0)
+                ? hostEntry.Comment
+                : Resources.FieldHasMultipleValues;
+
+
+            if ((editableFields & HostEntryField.Enabled) != 0)
+            {
+                enabledCheckBox.Checked = hostEntry.Enabled;
+            }
+            else
+            {
+                enabledCheckBox.CheckState = CheckState.Indeterminate;
+            }
 
             hasChanges = false;
         }
@@ -108,20 +130,27 @@ namespace RichardSzalay.HostsFileExtension.Client.View
             string address = addressComboBox.Text;
             string hostname = hostnameTextBox.Text;
 
-            canAccept = (!addressComboBox.Enabled || IsAddressValid(address)) &&
-                (!hostnameTextBox.Enabled || IsHostnameValid(hostname));
+            AddressChanged = (address != Resources.FieldHasMultipleValues);
+            HostnameChanged = (hostname != Resources.FieldHasMultipleValues);
+            CommentChanged = (commentTextBox.Text != Resources.FieldHasMultipleValues);
+            EnabledChanged = (enabledCheckBox.CheckState != CheckState.Indeterminate);
+
+            canAccept = (IsAddressValid(address)) &&
+                (IsHostnameValid(hostname));
 
             this.UpdateTaskForm();
         }
 
         private bool IsHostnameValid(string hostname)
         {
-            return Regex.IsMatch(hostname, @"^[\w\.\-]+$");
+            return hostname == Resources.FieldHasMultipleValues ||
+                Regex.IsMatch(hostname, @"^[\w\.\-]+$");
         }
 
         private bool IsAddressValid(string address)
         {
-            return Regex.IsMatch(address, @"^[^\s]+$");
+            return address == Resources.FieldHasMultipleValues || 
+                Regex.IsMatch(address, @"^[^\s]+$");
         }
 
         private HostEntry hostEntry;
@@ -141,29 +170,27 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         public Model.HostEntryField EditableFields
         {
             get { return editableFields; }
-            set
+            set { editableFields = value; }
+        }
+
+        public Model.HostEntryField FieldChanges
+        {
+            get
             {
-                editableFields = value;
+                var fields = Model.HostEntryField.None;
 
-                addressComboBox.Enabled = ((value & HostEntryField.Address) != 0);
-                hostnameTextBox.Enabled = ((value & HostEntryField.Hostname) != 0);
-                commentTextBox.Enabled = ((value & HostEntryField.Comment) != 0);
-                enabledCheckBox.Enabled = ((value & HostEntryField.Enabled) != 0);
+                if (AddressChanged) fields |= HostEntryField.Address;
+                if (HostnameChanged) fields |= HostEntryField.Hostname;
+                if (CommentChanged) fields |= HostEntryField.Comment;
+                if (EnabledChanged) fields |= HostEntryField.Enabled;
 
-                if (addressComboBox.Enabled)
-                {
-                    addressComboBox.Items.Clear();
-                    addressComboBox.Items.AddRange(addressValues);
-                }
-                else
-                {
-                    addressComboBox.Items.Clear();
-                    addressComboBox.Text = Resources.FieldHasMultipleValues;
-                }
-               
-                if (!hostnameTextBox.Enabled) hostnameTextBox.Text = Resources.FieldHasMultipleValues;
-                if (!commentTextBox.Enabled) commentTextBox.Text = Resources.FieldHasMultipleValues;
+                return fields;
             }
         }
+
+        private bool AddressChanged { get; set; }
+        private bool HostnameChanged { get; set; }
+        private bool CommentChanged { get; set; }
+        private new bool EnabledChanged { get; set; }
     }
 }

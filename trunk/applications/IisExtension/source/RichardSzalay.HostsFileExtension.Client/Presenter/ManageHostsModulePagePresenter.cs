@@ -17,6 +17,7 @@ using System.Diagnostics;
 using RichardSzalay.HostsFileExtension.Client.Controller;
 using RichardSzalay.HostsFileExtension.Client.Model;
 using RichardSzalay.HostsFileExtension.Client.Services;
+using RichardSzalay.HostsFileExtension.Messages;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
@@ -32,8 +33,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private IManageHostsControllerFactory controllerFactory;
 
-        private IAddressProvider addressProvider;
-
         private IHostEntrySelectionOptionsStrategy selectionOptionsStrategy;
 
         private string filter;
@@ -43,6 +42,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private IManagementUIService uiService;
         private TipSelector tipSelector;
         private string currentTip;
+        private string[] addresses;
+        private IServiceProvider serviceProvider;
 
         public ManageHostsModulePagePresenter(IManageHostsModulePage view)
         {
@@ -52,7 +53,13 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             this.view.ListItemDoubleClick += new EventHandler(view_ListItemDoubleClick);
             this.view.SearchFilterChanged += new EventHandler(view_SearchFilterChanged);
             this.view.DeleteSelected += new EventHandler(view_DeleteSelected);
+            this.view.EditSelected += new EventHandler(view_EditSelected);
             this.view.SelectionChanged += new EventHandler(view_SelectionChanged);
+        }
+
+        void view_EditSelected(object sender, EventArgs e)
+        {
+            this.EditSelectedEntry();
         }
 
         void view_SelectionChanged(object sender, EventArgs e)
@@ -88,11 +95,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         void view_Initialized(object sender, EventArgs e)
         {
-            this.addressProvider = (IAddressProvider)view.GetService(typeof(IAddressProvider));
-
             this.controllerFactory = (IManageHostsControllerFactory)view.GetService(typeof(IManageHostsControllerFactory));
 
             this.connection = (Connection)view.GetService(typeof(Connection));
+
+            this.serviceProvider = (IServiceProvider)connection;
 
             this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
 
@@ -136,6 +143,8 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             this.selectionOptionsStrategy = new HostEntrySelectionOptionsStrategy(hostEntryModels);
 
+            this.addresses = proxy.GetServerAddresses();
+
             this.options = selectionOptionsStrategy.GetOptions(this.SelectedEntries);
 
             DisplayEntries();
@@ -159,15 +168,15 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void AddTask()
         {
-            string defaultAddress = addressProvider.GetAddresses()[0];
+            string defaultAddress = addresses[0];
 
-            using (var form = new EditHostEntryForm(view.ServiceProvider, addressProvider))
+            using (var form = new EditHostEntryForm(view.ServiceProvider, addresses))
             {
                 form.Text = Resources.AddHostEntryDialogTitle;
 
                 HostEntry selectedEntry = view.SelectedEntries.Select(c => c.HostEntry).FirstOrDefault();
 
-                // TODO: Fix this default value
+                form.EditableFields = HostEntryField.All;
                 form.HostEntry = new HostEntry("", defaultAddress, null);
 
                 DialogResult result = view.ShowDialog(form);
@@ -182,15 +191,15 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         public virtual void EditSelectedEntry()
         {
-            using (var form = new EditHostEntryForm(view.ServiceProvider, addressProvider))
+            using (var form = new EditHostEntryForm(view.ServiceProvider, addresses))
             {
                 form.Text = Resources.EditHostEntryDialogTitle;
 
                 HostEntry templateEntry = this.view.SelectedEntries.First().HostEntry;
                 HostEntry editingEntry = templateEntry.Clone();
 
-                form.HostEntry = editingEntry;
                 form.EditableFields = options.EditableFields;
+                form.HostEntry = editingEntry;
 
                 DialogResult result = view.ShowDialog(form);
 
@@ -200,13 +209,21 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     var editedEntries = SelectedEntries.Select(entry =>
                         {
                             var newEntry = entry.HostEntry.Clone();
-                            this.ApplyChanges(newEntry, editingEntry, options.EditableFields);                            
+                            this.ApplyChanges(newEntry, editingEntry, form.FieldChanges);
 
                             return newEntry;
                         })
                         .ToList();
 
-                    this.proxy.EditEntries(originalEntries, editedEntries);
+                    try
+                    {
+                        this.proxy.EditEntries(originalEntries, editedEntries);
+                    }
+                    catch (HostsFileServiceException ex)
+                    {
+                        uiService.ShowError(ex, null, Resources.ActionFailedTitle, false);
+                        return;
+                    }
 
                     this.UpdateData();
                 }
@@ -215,22 +232,22 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private void ApplyChanges(HostEntry applyTo, HostEntry applyFrom, HostEntryField fields)
         {
-            if ((options.EditableFields & HostEntryField.Address) != 0)
+            if ((fields & HostEntryField.Address) != 0)
             {
                 applyTo.Address = applyFrom.Address;
             }
 
-            if ((options.EditableFields & HostEntryField.Hostname) != 0)
+            if ((fields & HostEntryField.Hostname) != 0)
             {
                 applyTo.Hostname = applyFrom.Hostname;
             }
 
-            if ((options.EditableFields & HostEntryField.Enabled) != 0)
+            if ((fields & HostEntryField.Enabled) != 0)
             {
                 applyTo.Enabled = applyFrom.Enabled;
             }
 
-            if ((options.EditableFields & HostEntryField.Comment) != 0)
+            if ((fields & HostEntryField.Comment) != 0)
             {
                 applyTo.Comment = applyFrom.Comment;
             }
@@ -297,8 +314,23 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             var hosts = SelectedEntries.Select(x => x.HostEntry.Hostname).Distinct();
 
+            var entriesToAdd = hosts
+                .Where(h => !hostEntryModels.Any(entry => entry.HostEntry.Hostname == h &&
+                            entry.HostEntry.Address == address))
+                .Select(host =>
+                {
+                    return new HostEntry(host, address, null);
+                })
+                .ToList();
+
+            if (entriesToAdd.Count > 0)
+            {
+                proxy.AddEntries(entriesToAdd);
+            }
+
             var entriesToEnableBefore = hosts
                 .Select(host => hostEntryModels.FirstOrDefault(m => m.HostEntry.Hostname == host && m.HostEntry.Address == address))
+                .Where(m => m != null)
                 .Select(m => m.HostEntry)
                 .ToList();
 
@@ -330,6 +362,19 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             );
 
             this.UpdateData();
+        }
+
+        private void SwitchAddressManual()
+        {
+            using (var form = new SelectSwitchAddress(serviceProvider, addresses))
+            {
+                var result = uiService.ShowDialog(form);
+
+                if (result == DialogResult.OK)
+                {
+                    SwitchAddress(form.Address);
+                }
+            }
         }
 
         private void OpenInNotepad()
@@ -432,7 +477,10 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     list.Add(CreateEditTask());
                 }
 
-                list.Add(CreateDeleteTask());
+                if (options.CanDelete)
+                {
+                    list.Add(CreateDeleteTask());
+                }
 
                 if (options.CanEnable)
                 {
@@ -503,6 +551,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             public void SwitchAddress(string address)
             {
                 this.owner.SwitchAddress(address);
+            }
+
+            public void SwitchAddressManual()
+            {
+                this.owner.SwitchAddressManual();
             }
 
             public void OpenInNotepad()
@@ -610,6 +663,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                     group.Items.Add(task);
                 }
+
+                group.Items.Add(new MethodTaskItem(
+                    "SwitchAddressManual",
+                    Resources.SwitchBindingsAddressesToManualTask,
+                    ChangesCategory));
 
                 return group;
             }

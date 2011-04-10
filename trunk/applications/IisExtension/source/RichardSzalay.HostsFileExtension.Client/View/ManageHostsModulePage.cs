@@ -27,6 +27,7 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         public event EventHandler ListItemDoubleClick;
         public event EventHandler SearchFilterChanged;
         public event EventHandler DeleteSelected;
+        public event EventHandler EditSelected;
         public event EventHandler SelectionChanged;
 
         private ColumnHeader addressColumnHeader;
@@ -64,6 +65,54 @@ namespace RichardSzalay.HostsFileExtension.Client.View
             ListView.MultiSelect = true;
             ListView.SelectedIndexChanged += new EventHandler(ListView_SelectedIndexChanged);
             ListView.DoubleClick += new EventHandler(ListView_DoubleClick);
+
+            ListView.KeyDown += new KeyEventHandler(ListView_KeyDown);
+        }
+
+        void ListView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                this.OnDeleteSelected(e);
+            }
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                this.OnEditSelected(e);
+            }
+
+            if (e.KeyCode == Keys.A && e.Control)
+            {
+                this.ListView.BeginUpdate();
+                this.ListView.SelectedIndices.Clear();
+
+                foreach (ListViewItem item in ListView.Items)
+                {
+                    item.Selected = true;
+                }
+
+                this.ListView.EndUpdate();
+            }
+        }
+
+        private void OnDeleteSelected(EventArgs e)
+        {
+            var handler = this.DeleteSelected;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private void OnEditSelected(EventArgs e)
+        {
+            var handler = this.EditSelected;
+
+            if (handler != null)
+            {
+                handler(this, e);
+            }
         }
 
         void ListView_DoubleClick(object sender, EventArgs e)
