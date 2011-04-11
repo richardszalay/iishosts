@@ -12,7 +12,7 @@
              Compressed="yes" Description="Hosts Management add-in for IIS 7" InstallerVersion="400"
              Languages="1033" Manufacturer="Richard Szalay" />
 
-    <Binary Id="IISCustomActionDll" SourceFile="Resources\IISCustomActionDll" />
+    <Binary Id="IISCustomActionDll" SourceFile="Resources\IISCustomActionDll-$(sys.BUILDARCH)" />
     <Condition Message="Setup cannot continue because another instance of [ProductName] is already installed on this computer. Please uninstall it first and then re-launch this installation.">(NOT DUPLICATEVERSIONFOUND) OR Installed</Condition>
     <Condition Message="A newer version of [ProductName] was found on this machine.">(NOT NEWERVERSIONFOUND) OR Installed</Condition>
     <Condition Message="Administrator privilege is required to install [ProductName].">Privileged</Condition>
@@ -134,7 +134,7 @@
     <Property Id="NEWERVERSIONFOUND" Secure="yes" />
     <Property Id="OLDERVERSIONFOUND" Secure="yes" />
 
-    <Upgrade Id="{91CB5063-159B-4075-BAC3-B832DD2DAEA9}">
+    <Upgrade Id="9c4a0b93-4cb6-4795-87b6-b9d3acead693">
       <UpgradeVersion Maximum="0.9.0.0" Property="OLDERVERSIONFOUND" MigrateFeatures="yes" IncludeMinimum="yes" />
       <UpgradeVersion Minimum="0.9.0.0" Property="NEWERVERSIONFOUND" OnlyDetect="yes" />
       <UpgradeVersion Minimum="0.9.0.0" Maximum="0.9.0.0" Property="DUPLICATEVERSIONFOUND" OnlyDetect="yes" IncludeMinimum="yes" IncludeMaximum="yes" />
