@@ -149,12 +149,14 @@ namespace RichardSzalay.HostsFileExtension.Service
 
         //private static readonly string[] ValidProtocols = new string[] { "http", "https", "tcp" };
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag GetSiteBindings(string siteName)
         {
             return CatchCommonExceptions(() =>
                 {
-                    Site site = ManagementUnit.ReadOnlyServerManager.Sites[siteName];
+                    var serverManager = ManagementUnit.ReadOnlyServerManager;
+
+                    Site site = GetSite(serverManager.Sites, siteName);
 
                     if (site == null)
                     {
@@ -202,6 +204,21 @@ namespace RichardSzalay.HostsFileExtension.Service
         {
             return binding.IsIPPortHostBinding &&
                 !String.IsNullOrEmpty(binding.Host);
+        }
+
+        private Site GetSite(SiteCollection sites, string name)
+        {
+            int siteCount = sites.Count;
+
+            for (int i=0; i<siteCount; i++)
+            {
+                if (sites[i].Name == name)
+                {
+                    return sites[i];
+                }
+            }
+
+            return null;
         }
     }
 }
