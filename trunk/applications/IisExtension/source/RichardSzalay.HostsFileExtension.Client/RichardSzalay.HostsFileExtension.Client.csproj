@@ -125,6 +125,7 @@
     </Compile>
     <Compile Include="Registration\ManageHostsHomepageTaskListProvider.cs" />
     <Compile Include="Registration\ManageHostsModule.cs" />
+    <Compile Include="Registration\TestTaskListProvider.cs" />
     <Compile Include="Services\GlobalHostEntryViewModelStrategy.cs" />
     <Compile Include="Services\HostEntrySelectionOptionsStrategy.cs" />
     <Compile Include="Services\IHostEntrySelectionOptionsStrategy.cs" />

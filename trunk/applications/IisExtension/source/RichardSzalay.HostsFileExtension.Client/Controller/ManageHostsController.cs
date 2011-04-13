@@ -14,11 +14,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Controller
 {
     public class ManageHostsController : IManageHostsController
     {
-        private static readonly string[] ValidBindingProtocols = new string[]
-        {
-            "http", "https", "tcp"
-        };
-
         private Module module;
 
         private INavigationService navService;
