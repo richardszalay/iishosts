@@ -43,7 +43,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         {
             extensibilityManager.RegisterExtension(
                 typeof(IHomepageTaskListProvider),
-                new ManageHostsHomepageTaskListProvider(this)
+                new TestTaskListProvider(this)
             );
         }
 
@@ -71,8 +71,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         {
             Connection service = (Connection)this.GetService(typeof(Connection));
 
-            if (service.ConfigurationPath.PathType != ConfigurationPathType.Server &&
-                service.ConfigurationPath.PathType != ConfigurationPathType.Site)
+            if (service.ConfigurationPath.PathType != ConfigurationPathType.Server)
             {
                 return false;
             }

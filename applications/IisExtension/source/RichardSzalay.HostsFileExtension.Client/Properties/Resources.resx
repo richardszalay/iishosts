@@ -268,4 +268,10 @@
   <data name="ActionFailedTitle" xml:space="preserve">
     <value>Action failed</value>
   </data>
+  <data name="SiteCurrentAddressDisabled" xml:space="preserve">
+    <value>(Disabled)</value>
+  </data>
+  <data name="SiteCurrentAddressMultiple" xml:space="preserve">
+    <value>{0} (+{1})</value>
+  </data>
 </root>

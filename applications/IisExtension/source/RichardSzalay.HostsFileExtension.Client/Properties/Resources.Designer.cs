@@ -428,6 +428,24 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to (Disabled).
+        /// </summary>
+        internal static string SiteCurrentAddressDisabled {
+            get {
+                return ResourceManager.GetString("SiteCurrentAddressDisabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} (+{1}).
+        /// </summary>
+        internal static string SiteCurrentAddressMultiple {
+            get {
+                return ResourceManager.GetString("SiteCurrentAddressMultiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Switch the enabled hostname of the selected host entries to {0}, disabling other entries of the same hostname.
         /// </summary>
         internal static string SwitchAddressDescription {

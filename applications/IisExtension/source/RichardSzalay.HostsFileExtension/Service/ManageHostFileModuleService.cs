@@ -147,16 +147,14 @@ namespace RichardSzalay.HostsFileExtension.Service
             return new HostsFile();
         }
 
-        //private static readonly string[] ValidProtocols = new string[] { "http", "https", "tcp" };
-
-        [ModuleServiceMethod(PassThrough = true)]
+        [ModuleServiceMethod]
         public PropertyBag GetSiteBindings(string siteName)
         {
             return CatchCommonExceptions(() =>
                 {
                     var serverManager = ManagementUnit.ReadOnlyServerManager;
 
-                    Site site = GetSite(serverManager.Sites, siteName);
+                    Site site = serverManager.Sites[siteName];
 
                     if (site == null)
                     {

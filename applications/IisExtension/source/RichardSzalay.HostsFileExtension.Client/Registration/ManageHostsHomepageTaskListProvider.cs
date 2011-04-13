@@ -49,6 +49,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         private HierarchyService hierarchyService;
         private INavigationService navigationService;
 
+        private bool enabled = false;
         private bool initialized = false;
         private bool isDirty = true;
         private IEnumerable<HostEntryViewModel> hostEntries;
@@ -69,15 +70,9 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                 HierarchyService hs = (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
                 INavigationService navService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
 
-                hs.InfoRefreshed += (s, e) =>
-                    {
-                        isDirty = true;
-                    };
-
-                navService.NavigationPerformed += (s, e) =>
-                    {
-                        isDirty = true;
-                    };
+                hs.InfoUpdated += (s, e) => isDirty = true;
+                hs.InfoRefreshed += (s, e) => isDirty = true;
+                navService.NavigationPerformed += (s, e) => isDirty = true;
 
                 initialized = true;
             }
@@ -87,12 +82,13 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         {
             this.Initialize(serviceProvider);
 
-            if (isDirty)
+            //return taskList;
+
+            enabled = (connection.ConfigurationPath.PathType == ConfigurationPathType.Site);
+
+            if (isDirty && enabled)
             {
-                if (connection.ConfigurationPath.SiteName != currentSiteName)
-                {
-                    controller = controllerFactory.Create(connection, module);
-                }
+                controller = controllerFactory.Create(connection, module);
 
                 var proxy = (ManageHostsFileModuleProxy)connection
                     .CreateProxy(this.module, typeof(ManageHostsFileModuleProxy));
@@ -101,8 +97,6 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
                 hierarchyService = (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
                 navigationService = (INavigationService)serviceProvider.GetService(typeof(INavigationService));
-
-                Trace.WriteLine("ManageHostsHomepageTaskListProvider.GetTaskList (" + connection.ConfigurationPath.SiteName + ")");
 
                 bool isSite = (connection.ConfigurationPath.PathType == ConfigurationPathType.Site);
 
@@ -130,6 +124,12 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
             this.hostEntries = allEntries
                 .Where(x => bindings.Any(b => b.Host == x.HostEntry.Hostname))
                 .ToList();
+
+            this.enabledHostEntryAddresses = hostEntries
+                .Where(e => e.HostEntry.Enabled)
+                .Select(e => e.HostEntry.Address)
+                .Distinct()
+                .ToArray();
         }
 
         private SiteBinding[] bindings;
@@ -137,6 +137,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         private IServiceProvider serviceProvider;
         private ICollection<string> alternateAddresses;
         private bool hasEnabledBindingEntries;
+        private string[] enabledHostEntryAddresses;
 
 
         private class TestTaskList : TaskList
@@ -183,7 +184,12 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
             private TaskItem CreateHostChangesGroup()
             {
-                GroupTaskItem taskItem = new GroupTaskItem("Expanded", "Hosts File", "", true);
+                GroupTaskItem taskItem = new GroupTaskItem("Expanded", "Hosts File", "Hosts", true);
+
+                string currentAddressValue = FormatCurrentAddress(owner.enabledHostEntryAddresses);
+
+                TextTaskItem item = new TextTaskItem(currentAddressValue, "Hosts", true);
+                taskItem.Items.Add(item);
 
                 if (owner.alternateAddresses != null)
                 {
@@ -191,7 +197,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
                     {
                         taskItem.Items.Add(new MethodTaskItem("SwitchBindingsAddress",
                             String.Format(Resources.SwitchBindingsAddressTask, alternateAddress),
-                            "Tasks",
+                            "Hosts",
                             String.Format(Resources.SwitchBindingAddressDescription, alternateAddress),
                             null, alternateAddress));
                     }
@@ -199,18 +205,35 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
                 taskItem.Items.Add(new MethodTaskItem("SwitchBindingsAddressToManual",
                         Resources.SwitchBindingsAddressesToManualTask,
-                        "Tasks"));
+                        "Hosts"));
                 
                 if (owner.hasEnabledBindingEntries)
                 {
                     taskItem.Items.Add(new MethodTaskItem("DisableAllBindingEntries",
                         Resources.DisableBindingEntriesTask,
-                        "Tasks", Resources.DisableBindingEntriesDescription));
+                        "Hosts", Resources.DisableBindingEntriesDescription));
                 }
 
-                taskItem.Items.Add(new MethodTaskItem("GoToHostsView", Resources.EditHostsTask, "Tasks"));
+                taskItem.Items.Add(new MethodTaskItem("GoToHostsView", Resources.EditHostsTask, "Hosts"));
 
                 return taskItem;
+            }
+
+            private string FormatCurrentAddress(string[] addresses)
+            {
+                if (addresses.Length == 0)
+                {
+                    return Resources.SiteCurrentAddressDisabled;
+                }
+                else if (addresses.Length > 1)
+                {
+                    return String.Format(Resources.SiteCurrentAddressMultiple, 
+                        addresses[0], addresses.Length - 1);
+                }
+                else
+                {
+                    return addresses[0];
+                }
             }
 
             public bool Expanded { get; set; }
