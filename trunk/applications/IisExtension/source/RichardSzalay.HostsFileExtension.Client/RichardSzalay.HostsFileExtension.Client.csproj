@@ -123,6 +123,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Registration\ManageHostsHomepageTaskList.cs" />
     <Compile Include="Registration\ManageHostsHomepageTaskListProvider.cs" />
     <Compile Include="Registration\ManageHostsModule.cs" />
     <Compile Include="Registration\TestTaskListProvider.cs" />

@@ -18,6 +18,7 @@ using RichardSzalay.HostsFileExtension.Client.Controller;
 using RichardSzalay.HostsFileExtension.Client.Model;
 using RichardSzalay.HostsFileExtension.Client.Services;
 using RichardSzalay.HostsFileExtension.Messages;
+using RichardSzalay.HostsFileExtension.Client.Registration;
 
 namespace RichardSzalay.HostsFileExtension.Presenter
 {
@@ -31,8 +32,6 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         private ManageHostsFileModuleProxy proxy;
 
-        private IManageHostsControllerFactory controllerFactory;
-
         private IHostEntrySelectionOptionsStrategy selectionOptionsStrategy;
 
         private string filter;
@@ -44,6 +43,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         private string currentTip;
         private string[] addresses;
         private IServiceProvider serviceProvider;
+        private ManageHostsModule module;
 
         public ManageHostsModulePagePresenter(IManageHostsModulePage view)
         {
@@ -95,13 +95,11 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
         void view_Initialized(object sender, EventArgs e)
         {
-            this.controllerFactory = (IManageHostsControllerFactory)view.GetService(typeof(IManageHostsControllerFactory));
+            this.module = (ManageHostsModule)this.view.Module;
 
             this.connection = (Connection)view.GetService(typeof(Connection));
 
             this.serviceProvider = (IServiceProvider)connection;
-
-            this.proxy = view.CreateProxy<ManageHostsFileModuleProxy>();
 
             this.uiService = (IManagementUIService)view.GetService(typeof(IManagementUIService));
 
@@ -135,15 +133,12 @@ namespace RichardSzalay.HostsFileExtension.Presenter
         {
             Trace.WriteLine("ManageHostsModulePagePresenter.UpdateData");
 
-            Connection connection = view.Connection;
-
-            IManageHostsController controller = controllerFactory.Create(connection, this.view.Module);
-
-            hostEntryModels = controller.GetHostEntryModels(connection);
-
+            hostEntryModels = new GlobalHostEntryViewModelStrategy()
+                .GetEntryModels(module.ServiceProxy.GetEntries());
+             
             this.selectionOptionsStrategy = new HostEntrySelectionOptionsStrategy(hostEntryModels);
 
-            this.addresses = proxy.GetServerAddresses();
+            this.addresses = module.ServiceProxy.GetServerAddresses();
 
             this.options = selectionOptionsStrategy.GetOptions(this.SelectedEntries);
 
@@ -183,7 +178,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                 if (result == DialogResult.OK)
                 {
-                    this.proxy.AddEntries(new List<HostEntry>() { form.HostEntry });
+                    this.module.ServiceProxy.AddEntries(new List<HostEntry>() { form.HostEntry });
                     this.UpdateData();
                 }
             }
@@ -217,7 +212,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
                     try
                     {
-                        this.proxy.EditEntries(originalEntries, editedEntries);
+                        this.module.ServiceProxy.EditEntries(originalEntries, editedEntries);
                     }
                     catch (HostsFileServiceException ex)
                     {
@@ -262,7 +257,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
             {
                 IList<HostEntry> entries = this.view.SelectedEntries.Select(e => e.HostEntry).ToList();
 
-                this.proxy.DeleteEntries(entries);
+                this.module.ServiceProxy.DeleteEntries(entries);
 
                 this.UpdateData();
             }
@@ -283,7 +278,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     entry.Enabled = true;
                 }
 
-                this.proxy.EditEntries(originalEntries, changedEntries);
+                this.module.ServiceProxy.EditEntries(originalEntries, changedEntries);
 
                 this.UpdateData();
             }
@@ -304,7 +299,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     entry.Enabled = false;
                 }
 
-                this.proxy.EditEntries(originalEntries, changedEntries);
+                this.module.ServiceProxy.EditEntries(originalEntries, changedEntries);
 
                 this.UpdateData();
             }
@@ -325,7 +320,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
 
             if (entriesToAdd.Count > 0)
             {
-                proxy.AddEntries(entriesToAdd);
+                module.ServiceProxy.AddEntries(entriesToAdd);
             }
 
             var entriesToEnableBefore = hosts
@@ -356,7 +351,7 @@ namespace RichardSzalay.HostsFileExtension.Presenter
                     return newEntry;
                 }).ToList();
 
-            this.proxy.EditEntries(
+            this.module.ServiceProxy.EditEntries(
                 entriesToDisableBefore.Concat(entriesToEnableBefore).ToList(),
                 entriesToDisableAfter.Concat(entriesToEnableAfter).ToList()
             );

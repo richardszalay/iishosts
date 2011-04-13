@@ -39,5 +39,13 @@ namespace RichardSzalay.HostsFileExtension.Registration
 
             return assemblyName.FullName.Replace(assemblyName.Name, assemblyName.Name + ".Client");
         }
+
+        public IEnumerable<string> SupportedProtocols
+        {
+            get
+            {
+                return new string[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps };
+            }
+        }
     }
 }

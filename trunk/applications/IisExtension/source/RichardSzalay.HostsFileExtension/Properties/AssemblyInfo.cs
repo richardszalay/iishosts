@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Resources;
+using System.Security.Permissions;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
@@ -41,3 +43,6 @@ using System.Runtime.InteropServices;
     "7342ff20d7240acd4384927fbf98732cc6d895d6f966f99e54940a2c1098560f982ffb4ccbeb8a" +
     "b50ef059f5408df0bae3c9c15fda388de28f6cf5f2cdd9496e50d808f4eb05976d2546f29c7130" +
     "78190bb3")]
+
+[assembly: NeutralResourcesLanguage("en")]
+[assembly: SecurityPermission(SecurityAction.RequestMinimum, SkipVerification = true)]

@@ -29,9 +29,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
             {
                 string siteName = connection.ConfigurationPath.SiteName;
 
-                var proxy = (ManageHostsFileModuleProxy)connection.CreateProxy(module, typeof(ManageHostsFileModuleProxy));
-
-                proxy.GetSiteBindings(siteName);
+                module.ServiceProxy.GetSiteBindings(siteName);
             }
 
             return taskList;        

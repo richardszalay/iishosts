@@ -10,6 +10,7 @@ using System.ComponentModel.Design;
 using Microsoft.Web.Management.Client.Extensions;
 using RichardSzalay.HostsFileExtension.Client.Controller;
 using RichardSzalay.HostsFileExtension.Client.Registration;
+using RichardSzalay.HostsFileExtension.Service;
 
 namespace RichardSzalay.HostsFileExtension.Client.Registration
 {
@@ -21,9 +22,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
     /// </remarks>
     public class ManageHostsModule : Module
     {
-        public ManageHostsModule()
-        {
-        }
+        private ManageHostsFileModuleProxy serviceProxy;
 
         protected override void Initialize(IServiceProvider serviceProvider, Microsoft.Web.Management.Server.ModuleInfo moduleInfo)
         {
@@ -43,7 +42,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         {
             extensibilityManager.RegisterExtension(
                 typeof(IHomepageTaskListProvider),
-                new TestTaskListProvider(this)
+                new ManageHostsHomepageTaskListProvider(this)
             );
         }
 
@@ -78,5 +77,22 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
 
             return base.IsPageEnabled(pageInfo);
         }
+
+        internal ManageHostsFileModuleProxy ServiceProxy
+        {
+            get
+            {
+                if (this.serviceProxy == null)
+                {
+                    Connection service = (Connection)this.GetService(typeof(Connection));
+                    this.serviceProxy = (ManageHostsFileModuleProxy)service.CreateProxy(this, typeof(ManageHostsFileModuleProxy));
+                }
+                return this.serviceProxy;
+            }
+        }
+ 
+
+ 
+
     }
 }
