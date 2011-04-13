@@ -22,7 +22,7 @@ namespace RichardSzalay.HostsFileExtension.Service
             this.addressProvider = addressProvider;
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag GetEntries(PropertyBag bag)
         {
             HostsFile hostsFile = GetHostsFile();
@@ -34,7 +34,7 @@ namespace RichardSzalay.HostsFileExtension.Service
             return response.ToPropertyBag();
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag AddEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>
@@ -56,7 +56,7 @@ namespace RichardSzalay.HostsFileExtension.Service
                 });
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag EditEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>
@@ -86,7 +86,7 @@ namespace RichardSzalay.HostsFileExtension.Service
                 });
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag DeleteEntries(PropertyBag bag)
         {
             return CatchCommonExceptions(() =>
@@ -147,14 +147,12 @@ namespace RichardSzalay.HostsFileExtension.Service
             return new HostsFile();
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag GetSiteBindings(string siteName)
         {
             return CatchCommonExceptions(() =>
                 {
-                    var serverManager = ManagementUnit.ReadOnlyServerManager;
-
-                    Site site = serverManager.Sites[siteName];
+                    Site site = ManagementUnit.ReadOnlyServerManager.Sites[siteName];
 
                     if (site == null)
                     {
@@ -179,7 +177,7 @@ namespace RichardSzalay.HostsFileExtension.Service
                 });
         }
 
-        [ModuleServiceMethod]
+        [ModuleServiceMethod(PassThrough = true)]
         public PropertyBag GetServerAddresses()
         {
             string[] addresses = addressProvider.GetAddresses();
