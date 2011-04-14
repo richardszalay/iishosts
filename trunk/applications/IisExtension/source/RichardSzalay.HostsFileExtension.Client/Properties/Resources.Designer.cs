@@ -376,6 +376,33 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Address.
+        /// </summary>
+        internal static string HostsPageAddressColumn {
+            get {
+                return ResourceManager.GetString("HostsPageAddressColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        internal static string HostsPageCommentColumn {
+            get {
+                return ResourceManager.GetString("HostsPageCommentColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Host Name.
+        /// </summary>
+        internal static string HostsPageHostNameColumn {
+            get {
+                return ResourceManager.GetString("HostsPageHostNameColumn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot manage remote hosts as the extension version is not compatible with the version installed locally..
         /// </summary>
         internal static string IncompatibleServiceVersion {
@@ -428,20 +455,29 @@ namespace RichardSzalay.HostsFileExtension.Client.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to (Disabled).
-        /// </summary>
-        internal static string SiteCurrentAddressDisabled {
-            get {
-                return ResourceManager.GetString("SiteCurrentAddressDisabled", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {0} (+{1}).
+        ///   Looks up a localized string similar to {0} (+{1} more).
         /// </summary>
         internal static string SiteCurrentAddressMultiple {
             get {
                 return ResourceManager.GetString("SiteCurrentAddressMultiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to (Not Set).
+        /// </summary>
+        internal static string SiteCurrentAddressNone {
+            get {
+                return ResourceManager.GetString("SiteCurrentAddressNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hosts File.
+        /// </summary>
+        internal static string SiteTaskListHostFileTitle {
+            get {
+                return ResourceManager.GetString("SiteTaskListHostFileTitle", resourceCulture);
             }
         }
         
