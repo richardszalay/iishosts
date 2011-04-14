@@ -46,20 +46,26 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         {
             oldListViewWidth = ListView.Width;
 
-            addressColumnHeader = new ColumnHeader();
-            addressColumnHeader.Text = "Address";
-            addressColumnHeader.Width = (int)((float)ListView.Width * 0.2f);
+            hostnameColumnHeader = new ColumnHeader
+            {
+                Text = Resources.HostsPageHostNameColumn,
+                Width = (int) ((float) ListView.Width*0.3f)
+            };
 
-            hostnameColumnHeader = new ColumnHeader();
-            hostnameColumnHeader.Text = "Host name";
-            hostnameColumnHeader.Width = (int)((float)ListView.Width * 0.3f);
+            addressColumnHeader = new ColumnHeader
+            {
+                Text = Resources.HostsPageAddressColumn,
+                Width = (int)((float)ListView.Width * 0.2f)
+            };
 
-            commentColumnHeader = new ColumnHeader();
-            commentColumnHeader.Text = "Comment";
-            commentColumnHeader.Width = (int)((float)ListView.Width * 0.5f);
+            commentColumnHeader = new ColumnHeader
+            {
+                Text = Resources.HostsPageCommentColumn,
+                Width = (int) ((float) ListView.Width*0.5f)
+            };
 
-            ListView.Columns.Add(addressColumnHeader);
             ListView.Columns.Add(hostnameColumnHeader);
+            ListView.Columns.Add(addressColumnHeader);
             ListView.Columns.Add(commentColumnHeader);
 
             ListView.MultiSelect = true;
@@ -280,29 +286,14 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         {
             ListViewItem item = new ListViewItem();
             item.Text = model.HostEntry.Address;
-            item.SubItems.Add(model.HostEntry.Hostname);
             item.SubItems.Add(model.HostEntry.Comment);
+            item.SubItems.Add(model.HostEntry.Hostname);
             item.Tag = model;
             item.Font = GetFont(model, item.Font);
             item.ForeColor = GetFontColor(model, item.ForeColor);
             item.UseItemStyleForSubItems = true;
-            item.ToolTipText = GetTooltipText(model);
 
             return item;
-        }
-
-        private string GetTooltipText(HostEntryViewModel model)
-        {
-            if (model.Conflicted)
-            {
-                return (model.HostEntry.IsNew)
-                    ? Resources.DNSConflictedEntryTooltip
-                    : Resources.ConflictedEntryTooltip;
-            }
-            else
-            {
-                return String.Empty;
-            }
         }
 
         private Color GetFontColor(HostEntryViewModel model, Color defaultColor)

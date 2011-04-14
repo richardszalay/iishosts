@@ -268,10 +268,22 @@
   <data name="ActionFailedTitle" xml:space="preserve">
     <value>Action failed</value>
   </data>
-  <data name="SiteCurrentAddressDisabled" xml:space="preserve">
-    <value>(Disabled)</value>
+  <data name="SiteCurrentAddressNone" xml:space="preserve">
+    <value>(Not Set)</value>
   </data>
   <data name="SiteCurrentAddressMultiple" xml:space="preserve">
-    <value>{0} (+{1})</value>
+    <value>{0} (+{1} more)</value>
+  </data>
+  <data name="HostsPageAddressColumn" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="HostsPageCommentColumn" xml:space="preserve">
+    <value>Comment</value>
+  </data>
+  <data name="HostsPageHostNameColumn" xml:space="preserve">
+    <value>Host Name</value>
+  </data>
+  <data name="SiteTaskListHostFileTitle" xml:space="preserve">
+    <value>Hosts File</value>
   </data>
 </root>
