@@ -262,7 +262,7 @@ namespace RichardSzalay.HostsFileExtension.Client.View
 
             items.Clear();
 
-            var newEntries = hostEntries.Select(c => CreateListViewItem(c));
+            var newEntries = hostEntries.Select(CreateListViewItem);
 
             foreach (ListViewItem item in newEntries)
             {
@@ -285,9 +285,9 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         private ListViewItem CreateListViewItem(HostEntryViewModel model)
         {
             ListViewItem item = new ListViewItem();
-            item.Text = model.HostEntry.Address;
+            item.Text = model.HostEntry.Hostname;
+            item.SubItems.Add(model.HostEntry.Address);
             item.SubItems.Add(model.HostEntry.Comment);
-            item.SubItems.Add(model.HostEntry.Hostname);
             item.Tag = model;
             item.Font = GetFont(model, item.Font);
             item.ForeColor = GetFontColor(model, item.ForeColor);
