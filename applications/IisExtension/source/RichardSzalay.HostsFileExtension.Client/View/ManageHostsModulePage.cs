@@ -14,6 +14,8 @@ using RichardSzalay.HostsFileExtension.Presenter;
 using Microsoft.Web.Management.Server;
 using RichardSzalay.HostsFileExtension.Client.View;
 using RichardSzalay.HostsFileExtension.Client.Model;
+using System.Diagnostics;
+using System.Globalization;
 
 namespace RichardSzalay.HostsFileExtension.Client.View
 {
@@ -390,6 +392,17 @@ namespace RichardSzalay.HostsFileExtension.Client.View
         Connection IManageHostsModulePage.Connection
         {
             get { return base.Connection; }
+        }
+
+        protected override bool ShowHelp()
+        {
+            return this.ShowOnlineHelp();
+        }
+
+        protected override bool ShowOnlineHelp()
+        {
+            Process.Start("http://iishosts.codeplex.com/documentation");
+            return true;
         }
     }
 }

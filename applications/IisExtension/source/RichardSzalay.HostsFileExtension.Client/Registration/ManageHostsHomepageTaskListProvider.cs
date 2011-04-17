@@ -29,6 +29,7 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
     /// </remarks>
     public partial class ManageHostsHomepageTaskListProvider : HomepageExtension
     {
+        private bool initialised = false;
         private ManageHostsModule module;
         private TaskList taskList;
         private ManagementConfigurationPath lastConfigPath;
@@ -43,14 +44,20 @@ namespace RichardSzalay.HostsFileExtension.Client.Registration
         {
             this.serviceProvider = serviceProvider;
 
+            if (!initialised)
+            {
+                initialised = true;
+
+                var hierarchyService =
+                    (HierarchyService)serviceProvider.GetService(typeof(HierarchyService));
+
+                hierarchyService.InfoUpdated += (s, e) => OnRefresh();
+            }
+
             Connection connection = (Connection)serviceProvider.GetService(typeof(Connection));
 
             if (connection.ConfigurationPath != lastConfigPath || taskList == null)
             {
-                //string siteName = connection.ConfigurationPath.SiteName;
-                //var proxy = (ManageHostsFileModuleProxy)connection.CreateProxy(module, typeof(ManageHostsFileModuleProxy));
-                //proxy.GetSiteBindings(siteName);
-
                 taskList = new ManageHostsHomepageTaskList(this, serviceProvider);
                 lastConfigPath = connection.ConfigurationPath;
             }

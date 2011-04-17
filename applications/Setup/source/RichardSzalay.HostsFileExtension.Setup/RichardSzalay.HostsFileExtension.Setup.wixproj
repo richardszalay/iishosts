@@ -6,7 +6,7 @@
     <ProductVersion>3.0</ProductVersion>
     <ProjectGuid>{9fca1847-9fc6-4d15-8ec3-c2fdc0466a5f}</ProjectGuid>
     <SchemaVersion>2.0</SchemaVersion>
-    <OutputName>iishostsfile</OutputName>
+    <OutputName>iishosts</OutputName>
     <OutputType>Package</OutputType>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildProjectDirectory)\..\..\tools\Wix\Wix.targets</WixTargetsPath>
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' AND '$(MSBuildExtensionsPath32)' != '' ">$(MSBuildExtensionsPath32)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
@@ -39,17 +39,10 @@
     <Compile Include="Product.wxs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\RichardSzalay.HostsFileExtension.Setup.Actions\RichardSzalay.HostsFileExtension.Setup.Actions.csproj">
-      <Name>RichardSzalay.HostsFileExtension.Setup.Actions</Name>
-      <Project>{556b1ca8-2737-4147-9ee2-d339fed55615}</Project>
-      <Private>True</Private>
-      <DoNotHarvest>True</DoNotHarvest>
-      <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
-      <RefTargetDir>INSTALLLOCATION</RefTargetDir>
-    </ProjectReference>
+    <Folder Include="Resources" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources" />
+    <Content Include="Resources\Hosts.ico" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <!--
