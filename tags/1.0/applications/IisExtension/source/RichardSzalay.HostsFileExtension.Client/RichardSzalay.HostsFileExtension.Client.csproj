@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3168F0D9-E662-4FC5-9482-AEB39E6F0FFC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RichardSzalay.HostsFileExtension.Client</RootNamespace>
+    <AssemblyName>RichardSzalay.HostsFileExtension.Client</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>RichardSzalay.HostsFileExtension.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Web.Management, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\..\Windows\System32\inetsrv\Microsoft.Web.Management.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\HostEntry.cs">
+      <Link>HostEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\AddEntriesRequest.cs">
+      <Link>Messages\AddEntriesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\AddEntriesResponse.cs">
+      <Link>Messages\AddEntriesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\DeleteEntriesRequest.cs">
+      <Link>Messages\DeleteEntriesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\DeleteEntriesResponse.cs">
+      <Link>Messages\DeleteEntriesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\EditEntriesRequest.cs">
+      <Link>Messages\EditEntriesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\EditEntriesResponse.cs">
+      <Link>Messages\EditEntriesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetEntriesRequest.cs">
+      <Link>Messages\GetEntriesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetEntriesResponse.cs">
+      <Link>Messages\GetEntriesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetServerAddressesRequest.cs">
+      <Link>Messages\GetServerAddressesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetServerAddressesResponse.cs">
+      <Link>Messages\GetServerAddressesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetSiteBindingHostnamesRequest.cs">
+      <Link>Messages\GetSiteBindingHostnamesRequest.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\GetSiteBindingHostnamesResponse.cs">
+      <Link>Messages\GetSiteBindingHostnamesResponse.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\HostEntriesMessage.cs">
+      <Link>Messages\HostEntriesMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\HostEntryMessage.cs">
+      <Link>Messages\HostEntryMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\HostsFileServiceException.cs">
+      <Link>Messages\HostsFileServiceException.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\ServiceMessage.cs">
+      <Link>Messages\ServiceMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\Messages\VoidMessage.cs">
+      <Link>Messages\VoidMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\RichardSzalay.HostsFileExtension\SiteBinding.cs">
+      <Link>SiteBinding.cs</Link>
+    </Compile>
+    <Compile Include="Controller\IManageHostsController.cs" />
+    <Compile Include="Controller\IManageHostsControllerFactory.cs" />
+    <Compile Include="Controller\ManageHostsController.cs" />
+    <Compile Include="Controller\ManageHostsControllerFactory.cs" />
+    <Compile Include="Model\HostEntryField.cs" />
+    <Compile Include="Model\HostEntrySelectionOptions.cs" />
+    <Compile Include="Model\HostEntryViewModel.cs" />
+    <Compile Include="Presenter\ManageHostsModulePagePresenter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Registration\ManageHostsHomepageTaskList.cs" />
+    <Compile Include="Registration\ManageHostsHomepageTaskListProvider.cs" />
+    <Compile Include="Registration\ManageHostsModule.cs" />
+    <Compile Include="Registration\TestTaskListProvider.cs" />
+    <Compile Include="Services\GlobalHostEntryViewModelStrategy.cs" />
+    <Compile Include="Services\HostEntrySelectionOptionsStrategy.cs" />
+    <Compile Include="Services\IHostEntrySelectionOptionsStrategy.cs" />
+    <Compile Include="Services\IHostEntryViewModelStrategy.cs" />
+    <Compile Include="Services\ManageHostsFileModuleProxy.cs" />
+    <Compile Include="Services\TipSelector.cs" />
+    <Compile Include="View\EditHostEntryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\EditHostEntryForm.Designer.cs">
+      <DependentUpon>EditHostEntryForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\IManageHostsModulePage.cs" />
+    <Compile Include="View\ManageHostsModulePage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\SelectSwitchAddress.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\SelectSwitchAddress.Designer.cs">
+      <DependentUpon>SelectSwitchAddress.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\EditHostEntryForm.resx">
+      <DependentUpon>EditHostEntryForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\SelectSwitchAddress.resx">
+      <DependentUpon>SelectSwitchAddress.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RichardSzalay.HostsFileExtension.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Icon-32x32.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>call "%25VS100COMNTOOLS%25\vsvars32.bat"
+gacutil.exe /if "$(TargetPath)"</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

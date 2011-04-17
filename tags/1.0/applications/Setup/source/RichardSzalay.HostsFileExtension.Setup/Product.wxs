@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+
+  <?define ExtensionDll = "$(sys.CURRENTDIR)..\..\..\IisExtension\source\RichardSzalay.HostsFileExtension\bin\$(var.Configuration)\RichardSzalay.HostsFileExtension.dll" ?>
+  <?define ClientExtensionDll = "$(sys.CURRENTDIR)..\..\..\IisExtension\source\RichardSzalay.HostsFileExtension.Client\bin\$(var.Configuration)\RichardSzalay.HostsFileExtension.Client.dll" ?>
+  <?define Version = "1.0.0.0"?>
+  
+  <?if $(var.Platform) = x64 ?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+  <?else ?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+  <?endif ?>
+
+  <Product Id="e4dee341-5fad-463d-a73c-0783a59a6d23" Name="Hosts File Manager" 
+           Language="1033" Version="$(var.Version)" Manufacturer="Richard Szalay" 
+           UpgradeCode="4b5339df-1968-4484-b048-0a82ce733ffe">
+
+    <Package Comments="This installer database contains the logic and data required to install Hosts Management add-in for IIS 7"
+             Compressed="yes" Description="Hosts File Manager" InstallerVersion="400"
+             Languages="1033" Manufacturer="Richard Szalay" Platform="$(var.Platform)" />
+
+    <Binary Id="IISCustomActionDll" SourceFile="Resources\IISCustomActionDll-$(var.Platform)" />
+    <Condition Message="Administrator privilege is required to install [ProductName].">Privileged</Condition>
+    <Condition Message="[ProductName] requires Microsoft Windows Vista Service Pack 1 or later.">(NOT VersionNT = 600) OR (ServicePackLevel &gt;= 1)</Condition>
+    <Condition Message="[ProductName] cannot be installed on Vista Home Basic.">(WINDOWSEDITION &lt;&gt; "HomeBasic")</Condition>
+    <Condition Message="IIS Version 7.0 or greater is required to install [ProductName].">(IISMAJORVERSION &gt;= "#7") OR (Installed)</Condition>
+    <?if $(var.Platform) = x86 ?>
+    <Condition Message="The 32-bit version of [ProductName] cannot be installed on a 64-bit edition of Microsoft Windows.">NOT Msix64</Condition>
+    <?endif?>
+
+    <CustomAction Id="CheckForSharedConfiguration" BinaryKey="IISCustomActionDll" DllEntry="CheckForSharedConfigurationCA" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="IISScheduleInstallCA" BinaryKey="IISCustomActionDll" DllEntry="IISScheduleInstallCA" Impersonate="no" />
+    <CustomAction Id="IISScheduleUninstallCA" BinaryKey="IISCustomActionDll" DllEntry="IISScheduleUninstallCA" Impersonate="no" />
+    <CustomAction Id="IISExecuteCA" BinaryKey="IISCustomActionDll" DllEntry="IISExecuteCA" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="IISBeginTransactionCA" BinaryKey="IISCustomActionDll" DllEntry="IISBeginTransactionCA" Execute="deferred" Impersonate="no" />
+    <CustomAction Id="IISRollbackTransactionCA" BinaryKey="IISCustomActionDll" DllEntry="IISRollbackTransactionCA" Execute="rollback" Impersonate="no" />
+    <CustomAction Id="IISCommitTransactionCA" BinaryKey="IISCustomActionDll" DllEntry="IISCommitTransactionCA" Execute="commit" Impersonate="no" />
+    <CustomAction Id="CheckForServicesRunning" BinaryKey="IISCustomActionDll" DllEntry="CheckForServicesRunningCA" />
+
+    <CustomTable Id="IISUIModule">
+      <Column Id="Name" PrimaryKey="yes" Type="string" Width="0" />
+      <Column Id="Component_" Type="string" Width="72" KeyTable="Component" KeyColumn="1" Category="Identifier" Modularize="Column" />
+      <Column Id="AssemblyInfoComponent_" Type="string" Width="72" Nullable="yes" KeyTable="Component" KeyColumn="1" Category="Identifier" Modularize="Column" />
+      <Column Id="TypeName" Type="string" Width="0" />
+      <Column Id="RegisterInModulesSection" Type="string" Width="0" Nullable="yes" />
+      <Column Id="PrependToList" Type="string" Width="0" Nullable="yes" />
+      <Row>
+        <Data Column="Name">ManageHosts</Data>
+        <Data Column="Component_">ManageHostsUIModule</Data>
+        <Data Column="AssemblyInfoComponent_" />
+        <Data Column="TypeName">RichardSzalay.HostsFileExtension.Registration.ManageHostsModuleUIProvider</Data>
+        <Data Column="RegisterInModulesSection">1</Data>
+        <Data Column="PrependToList" />
+      </Row>
+    </CustomTable>
+    
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="$(var.PlatformProgramFilesFolder)">
+        <Directory Id="INSTALLLOCATION" Name="Richard Szalay">
+          <Directory Id="HostsFileExtension" Name="HostsFileExtension">
+            <Component Id="ManageHostsUIModule" Guid="BA2B9754-A700-4236-A930-2F3D59AA9513" Win64="$(var.Win64)">
+              <File Id="ManageHostsUIModuleAssembly" 
+                    Assembly=".net"
+                    Name="RichardSzalay.HostsFileExtension.dll" ShortName="mnghosts.dll"
+                    Source="$(var.ExtensionDll)" 
+                    KeyPath="yes" Checksum="yes" DiskId="1" />
+            </Component>
+            <Component Id="ManageHostsUIModuleClient" Guid="52D4A1D8-0565-4A83-B109-64578D538474" Win64="$(var.Win64)">
+              <File Id="ManageHostsUIModuleClientAssembly"
+                    Assembly=".net"
+                    Name="RichardSzalay.HostsFileExtension.Client.dll" ShortName="mnghostc.dll"
+                    Source="$(var.ClientExtensionDll)"
+                    KeyPath="yes" Checksum="yes" DiskId="1" />
+            </Component>
+          </Directory>
+				</Directory>
+			</Directory>
+		</Directory>
+    
+		<Feature Id="ManageHostsAdminUI" Description="Configures the IIS Hosts Extension in IIS Manager" Title="IIS Hosts Extension" Level="1">
+			<ComponentRef Id="ManageHostsUIModule" />
+      <ComponentRef Id="ManageHostsUIModuleClient" />
+      <Condition Level="0">NOT ((IISMANAGEMENTCONSOLEINSTALLED = "#1") OR (IISADMINSERVICEINSTALLED = "#1"))</Condition>
+		</Feature>
+
+    <Icon Id="Hosts.ico" SourceFile="Resources/Hosts.ico" />
+    <Media Id="1" Cabinet="mnghosts.cab" EmbedCab="yes" />
+
+    <Property Id="IISCHECKSERVICESRUNNING" Value="1" />
+    <Property Id="ARPCONTACT" Value="Richard Szalay" />
+    <Property Id="ARPPRODUCTICON" Value="Hosts.ico" />
+    <Property Id="ARPHELPLINK" Value="http://iishosts.codeplex.com/documentation" />
+    <Property Id="ARPURLINFOABOUT" Value="http://iishosts.codeplex.com" />
+    <Property Id="ARPURLUPDATEINFO" Value="http://iishosts.codeplex.com/releases" />
+    <Property Id="ALLUSERS" Value="2" />
+    <Property Id="IISADMINSERVICEINSTALLED" Secure="yes">
+      <RegistrySearch Id="RegistrySearch_IISADMINSERVICEINSTALLED" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp\Components" Name="AdminService" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+    <Property Id="IISMAJORVERSION" Secure="yes">
+      <RegistrySearch Id="RegistrySearch_IISMAJORVERSION" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp" Name="MajorVersion" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+    <Property Id="IISMINORVERSION" Secure="yes">
+      <RegistrySearch Id="RegistrySearch_IISMINORVERSION" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp" Name="MinorVersion" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+    <Property Id="IISMANAGEMENTCONSOLEINSTALLED" Secure="yes">
+      <RegistrySearch Id="RegistrySearch_IISMANAGEMENTCONSOLEINSTALLED" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp\Components" Name="ManagementConsole" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+    <Property Id="IISW3SVCINSTALLED" Secure="yes">
+      <RegistrySearch Id="RegistrySearch_IISW3SVCINSTALLED" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp\Components" Name="W3SVC" Type="raw" Win64="$(var.Win64)" />
+    </Property>
+
+    <MajorUpgrade 
+      Schedule="afterInstallInitialize"
+      DowngradeErrorMessage="A newer version of [ProductName] was found on this machine."
+      />
+
+    <InstallExecuteSequence>
+      <LaunchConditions After="FindRelatedProducts" />
+      <Custom Action="CheckForSharedConfiguration" After="RemoveExistingProducts" />
+      <Custom Action="CheckForServicesRunning" After="CheckForSharedConfiguration">(VersionNT = 600) AND (ServicePackLevel = 1) AND (NOT Installed) AND (NOT (IISCHECKSERVICESRUNNING = "#0"))</Custom>
+      <Custom Action="IISScheduleUninstallCA" Before="RemoveFiles">NOT SKIPUNINSTALLCA</Custom>
+      <Custom Action="IISScheduleInstallCA" After="InstallFiles">NOT SKIPINSTALLCA</Custom>
+    </InstallExecuteSequence>
+
+  </Product>
+</Wix>
