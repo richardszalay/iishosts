@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\..\..\Common.props" Condition="Exists('..\..\..\..\Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -12,8 +13,9 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' ">$(MSBuildProjectDirectory)\..\..\tools\Wix\Wix.CA.targets</WixCATargetsPath>
-    <WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.0\Wix.CA.targets</WixCATargetsPath>
+	<WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' ">C:\Program Files (x86)\WiX Toolset v3.10\SDK\Wix.CA.targets</WixCATargetsPath>
+    <WixCATargetsPath Condition=" '$(WixCATargetsPath)' == '' or !Exists('$(WixCATargetsPath)') ">$(MSBuildProjectDirectory)\..\..\tools\Wix\Wix.CA.targets</WixCATargetsPath>
+
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>4.0</OldToolsVersion>
@@ -72,14 +74,17 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+	<IisAssemblyRoot Condition="'$(IisAssemblyRoot)' == ''">$(WINDIR)\System32\inetsrv\</IisAssemblyRoot>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.Administration, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Windows\System32\inetsrv\Microsoft.Web.Administration.dll</HintPath>
+      <HintPath>$(IisAssemblyRoot)Microsoft.Web.Administration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Management, Version=7.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Windows\System32\inetsrv\Microsoft.Web.Management.dll</HintPath>
+      <HintPath>$(IisAssemblyRoot)Microsoft.Web.Management.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration.Install" />
@@ -94,7 +99,9 @@
     </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.Deployment.WindowsInstaller" />
+    <Reference Include="Microsoft.Deployment.WindowsInstaller">
+		<HintPath>C:\Program Files (x86)\WiX Toolset v3.10\bin\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CustomAction.cs">
