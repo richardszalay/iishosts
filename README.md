@@ -13,7 +13,7 @@ For PowerShell users, try [richardszalay/pshosts](https://github.com/richardszal
 
 ## Installation
 
-Simply download the installer for the latest release and run it.
+Simply [download the installer for the latest release](https://github.com/richardszalay/iishosts/releases/latest) and run it.
 
 ## Release Notes
 
@@ -21,7 +21,7 @@ Simply download the installer for the latest release and run it.
 
 * [Bulk editing](docs/Editing%20Host%20Entries.md)
 * [Address switching](docs/Host%20Switching.md) (also [across site bindings](docs/Editing%20Site%20Binding%20Host%20Entries.md))
-* [Documentation](docs)
+* [Documentation](docs/Documentation.md)
 * Remote management
 * Significant installer improvements
 
@@ -32,9 +32,9 @@ Simply download the installer for the latest release and run it.
 * Address field is automatically populated with local IP addresses
 * Local connections only
 
-*Warning: The installer for Release 1 does not check for IIS7 but will not fail if it is not found*
+**Warning: The installer for Release 1 does not check for IIS7 but will not fail if it is not found**
 
-*Warning: Do not install Release 1 x86 on Windows Vista/7 x64. The installation will fail, but appear to be successful. Uninstall and download the correct version
+**Warning: Do not install Release 1 x86 on Windows Vista/7 x64. The installation will fail, but appear to be successful. Uninstall and download the correct version**
 
 ## Roadmap
 
