@@ -11,13 +11,17 @@ For PowerShell users, try [richardszalay/pshosts](https://github.com/richardszal
 * Integration into IIS 7+ (still supported in Windows 10)
 * Inherit's IIS 7 auto-elevation in Windows 7
 
+## Installation
+
+Simply download the installer for the latest release and run it.
+
 ## Release Notes
 
 ### 1.0
 
-* Bulk editing
-* Address switching (also across site bindings)
-* Documentation
+* [Bulk editing](docs/Editing%20Host%20Entries.md)
+* [Address switching](docs/Host%20Switching.md) (also [across site bindings](docs/Editing%20Site%20Binding%20Host%20Entries.md))
+* [Documentation](docs)
 * Remote management
 * Significant installer improvements
 
