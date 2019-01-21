@@ -91,9 +91,9 @@
     <Property Id="IISCHECKSERVICESRUNNING" Value="1" />
     <Property Id="ARPCONTACT" Value="Richard Szalay" />
     <Property Id="ARPPRODUCTICON" Value="Hosts.ico" />
-    <Property Id="ARPHELPLINK" Value="http://iishosts.codeplex.com/documentation" />
-    <Property Id="ARPURLINFOABOUT" Value="http://iishosts.codeplex.com" />
-    <Property Id="ARPURLUPDATEINFO" Value="http://iishosts.codeplex.com/releases" />
+    <Property Id="ARPHELPLINK" Value="https://github.com/richardszalay/iishosts/wiki" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/richardszalay/iishosts" />
+    <Property Id="ARPURLUPDATEINFO" Value="https://github.com/richardszalay/iishosts/releases" />
     <Property Id="ALLUSERS" Value="2" />
     <Property Id="IISADMINSERVICEINSTALLED" Secure="yes">
       <RegistrySearch Id="RegistrySearch_IISADMINSERVICEINSTALLED" Root="HKLM" Key="SOFTWARE\Microsoft\InetStp\Components" Name="AdminService" Type="raw" Win64="$(var.Win64)" />
