@@ -18,7 +18,8 @@ $packageArgs = @{
   checksum64    = 'C7FB961943090AA26454F306036ADB28E6F74F41929DEF473AE449567DD4F42F'
   checksumType64= 'sha256'
 
-  silentArgs    = "/qn /norestart /l*v `"$($env:TEMP)\$($packageName).$($env:chocolateyPackageVersion).MsiInstall.log`""
+  #NOTE: quiet installation (/qn) has been excluded here because prevented the installer from correctly identifying the iis version  
+  silentArgs    = "/norestart /l*v `"$($env:TEMP)\$($packageName).$($env:chocolateyPackageVersion).MsiInstall.log`""
   validExitCodes= @(0, 3010, 1641)
 }
 

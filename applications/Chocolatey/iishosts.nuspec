@@ -34,7 +34,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
 
     <!-- == SOFTWARE SPECIFIC SECTION == -->
     <!-- This section is about the software itself -->
-    <title>iishosts</title>
+    <title>Hosts File Manager</title>
     <authors>richardszalay</authors>
     <!-- projectUrl is required for the community feed -->
     <projectUrl>https://github.com/richardszalay/iishosts</projectUrl>
