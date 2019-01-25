@@ -21,7 +21,7 @@ Simply [download the installer for the latest release](https://github.com/richar
 * Added Chocolatey package
 * Updated links to refer to github
 
-### 1.01
+### 1.0.1
 
 * [Bulk editing](docs/Editing%20Host%20Entries.md)
 * [Address switching](docs/Host%20Switching.md) (also [across site bindings](docs/Editing%20Site%20Binding%20Host%20Entries.md))
