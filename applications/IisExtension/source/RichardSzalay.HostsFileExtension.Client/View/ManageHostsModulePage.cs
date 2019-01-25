@@ -401,7 +401,7 @@ namespace RichardSzalay.HostsFileExtension.Client.View
 
         protected override bool ShowOnlineHelp()
         {
-            Process.Start("http://iishosts.codeplex.com/documentation");
+            Process.Start("https://github.com/richardszalay/iishosts/wiki");
             return true;
         }
     }
