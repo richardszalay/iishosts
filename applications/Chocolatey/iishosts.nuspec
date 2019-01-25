@@ -49,7 +49,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <docsUrl>https://github.com/richardszalay/iishosts/blob/master/docs/Documentation.md</docsUrl>
     <!--<mailingListUrl></mailingListUrl>-->
     <bugTrackerUrl>https://github.com/richardszalay/iishosts/issues</bugTrackerUrl>
-    <tags>iishosts</tags>
+    <tags>iis, microsoft, hosts, hostsfile, admin, network</tags>
     <summary>Hosts File Manager allows local host entries (in %windir%\system32\drivers\etc) to be edited from within IIS Manager. </summary>
     <description>
 Hosts File Manager allows local host entries (in %windir%\system32\drivers\etc) to be edited from within IIS Manager. 
