@@ -1,8 +1,8 @@
 ﻿
 $ErrorActionPreference = 'Stop';
 $toolsDir   = "$(Split-Path -parent $MyInvocation.MyCommand.Definition)"
-$url        = 'https://github.com/richardszalay/iishosts/releases/download/v1.0.1/iishosts_1.0.1_x86.msi'
-$url64      = 'https://github.com/richardszalay/iishosts/releases/download/v1.0.1/iishosts_1.0.1_x64.msi'
+$url        = 'https://github.com/richardszalay/iishosts/releases/download/v1.0.2/iishosts_1.0.2_x86.msi'
+$url64      = 'https://github.com/richardszalay/iishosts/releases/download/v1.0.2/iishosts_1.0.2_x64.msi'
 
 $packageArgs = @{
   packageName   = $env:ChocolateyPackageName

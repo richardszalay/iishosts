@@ -26,7 +26,7 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <!-- version should MATCH as closely as possible with the underlying software -->
     <!-- Is the version a prerelease of a version? https://docs.nuget.org/create/versioning#creating-prerelease-packages -->
     <!-- Note that unstable versions like 0.0.1 can be considered a released version, but it's possible that one can release a 0.0.1-beta before you release a 0.0.1 version. If the version number is final, that is considered a released version and not a prerelease. -->
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packageSourceUrl>https://github.com/richardszalay/iishosts/releases</packageSourceUrl>
     <!-- owners is a poor name for maintainers of the package. It sticks around by this name for compatibility reasons. It basically means you. -->
     <!--<owners>__REPLACE_YOUR_NAME__</owners>-->
@@ -38,7 +38,9 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <authors>richardszalay</authors>
     <!-- projectUrl is required for the community feed -->
     <projectUrl>https://github.com/richardszalay/iishosts</projectUrl>
-    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/iishosts.png</iconUrl>-->
+
+    <iconUrl>https://cdn.jsdelivr.net/gh/richardszalay/iishosts@master/applications/IisExtension/assets/Icon-128x128.png</iconUrl>
+    
     <!-- <copyright>Year Software Vendor</copyright> -->
     <!-- If there is a license Url available, it is required for the community feed -->
     <licenseUrl>https://github.com/richardszalay/iishosts/blob/master/LICENSE.md</licenseUrl>
@@ -49,13 +51,25 @@ This is a nuspec. It mostly adheres to https://docs.nuget.org/create/Nuspec-Refe
     <bugTrackerUrl>https://github.com/richardszalay/iishosts/issues</bugTrackerUrl>
     <tags>iishosts</tags>
     <summary>Hosts File Manager allows local host entries (in %windir%\system32\drivers\etc) to be edited from within IIS Manager. </summary>
-    <description>In addition to providing a GUI, IIS Manager can also provide integration into individual websites on the local machine. IIS Manager is also auto-elevated in Windows 7, making the process even smoother.</description>
-    <releaseNotes>### 1.0.1
-* Bulk editing
-* Address switching
-* Documentation
-* Remote management
-* Significant installer improvements
+    <description>
+Hosts File Manager allows local host entries (in %windir%\system32\drivers\etc) to be edited from within IIS Manager. 
+
+In addition to providing a GUI, IIS Manager can also provide integration into individual websites on the local machine. IIS Manager is also auto-elevated in Windows 7, making the process even smoother.
+
+## Features
+- Does not modify the formatting of existing entries (even when making changes)
+- Supports enabling/disabling entries (by commenting them out)
+- Integration into IIS 7+ (still supported in Windows 10)
+- Inherit's IIS 7 auto-elevation in Windows 7
+  
+## Notes
+- The package requires the Windows feature 'Web-Server-Mgmt-Tools' to be installed
+
+    </description>
+    <releaseNotes>
+### 1.0.2
+* Added Chocolatey package
+* Updated links to refer to github
     </releaseNotes>
     <!-- =============================== -->      
 
